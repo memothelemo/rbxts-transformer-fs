@@ -1,5 +1,4 @@
 import ts from "byots";
-import Macro from "../Macro";
 import RojoResolver from "../RojoResolver";
 import { ProjectType } from "../RojoResolver/constants";
 import { PathTranslator } from "../Shared/classes/pathTranslator";
@@ -19,8 +18,6 @@ export class TransformState {
 	public outDir = this.options.outDir ?? this.currentDir;
 
 	public packageName: string;
-
-	public macroManager = new Macro.Manager(this);
 	public projectType: ProjectType;
 
 	public constructor(

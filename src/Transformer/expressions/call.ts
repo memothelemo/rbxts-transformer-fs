@@ -1,5 +1,4 @@
 import ts from "byots";
-import Macro from "../../Macro";
 import { ErrorLogger } from "../../Shared/constants";
 import { transformPathFunction } from "../macros/transformPathFunction";
 import { TransformState } from "../state";
@@ -10,9 +9,9 @@ function transformCallExpressionInner(
 	functionName: string,
 ) {
 	switch (functionName) {
-		case Macro.CALL_MACROS.$path:
+		case "$path":
 			return transformPathFunction(state, node);
-		case Macro.CALL_MACROS.$pathWaitFor:
+		case "$pathWaitFor":
 			return transformPathFunction(state, node, true);
 		default:
 			ErrorLogger.writeLine("Unsupported call marco name!");
@@ -24,16 +23,24 @@ export function transformCallExpression(
 	state: TransformState,
 	node: ts.CallExpression,
 ) {
-	/* Get the symbol */
-	const symbol = state.getSymbol(node);
-	if (!symbol) {
+	const signature = state.typeChecker.getResolvedSignature(node);
+	if (!signature) {
 		return node;
 	}
 
-	const macrosName = state.macroManager.getCallMacros(symbol);
-	if (!macrosName) {
+	const { declaration } = signature;
+	if (
+		!declaration ||
+		ts.isJSDocSignature(declaration) ||
+		!state.isTransformerModule(declaration.getSourceFile())
+	) {
 		return node;
 	}
 
-	return transformCallExpressionInner(state, node, macrosName);
+	const functionName = declaration.name && declaration.name.getText();
+	if (!functionName) {
+		return node;
+	}
+
+	return transformCallExpressionInner(state, node, functionName);
 }
