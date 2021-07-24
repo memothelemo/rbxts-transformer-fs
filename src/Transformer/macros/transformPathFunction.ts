@@ -3,7 +3,7 @@ import path from "path";
 import { assert } from "../../Shared/functions/assert";
 import { TransformState } from "../state";
 
-function getPathFromSpecifier(
+export function getPathFromSpecifier(
 	state: TransformState,
 	source: ts.SourceFile,
 	hostDir: string,
@@ -21,6 +21,7 @@ function getPathFromSpecifier(
 export function transformPathFunction(
 	state: TransformState,
 	node: ts.CallExpression,
+	waitFor?: boolean,
 ) {
 	if (!state.rojoResolver) {
 		throw new Error("$path was used but Rojo could not be resolved");
@@ -36,24 +37,29 @@ export function transformPathFunction(
 	}
 
 	const converted = new Array<ts.Expression>();
-	for (const arg of node.arguments) {
-		if (arg === undefined || !ts.isStringLiteral(arg)) {
-			throw new Error("Expected string");
-		}
+	const pathArg = node.arguments[0];
+	assert(
+		ts.isStringLiteral(pathArg),
+		"Path argument must be totally string! Not even a single variable",
+	);
 
-		const rbxPath = getPathFromSpecifier(
-			state,
-			state.getSourceFile(node),
-			state.currentDir,
-			arg.text,
-		);
+	const rbxPath = getPathFromSpecifier(
+		state,
+		state.getSourceFile(node),
+		state.currentDir,
+		pathArg.text,
+	);
 
-		assert(rbxPath, "Could not find rojo data");
-		converted.push(
-			factory.createArrayLiteralExpression(
-				rbxPath.map(v => factory.createStringLiteral(v)),
-			),
-		);
+	assert(rbxPath, "Could not find rojo data");
+	converted.push(
+		factory.createArrayLiteralExpression(
+			rbxPath.map(v => factory.createStringLiteral(v)),
+		),
+	);
+
+	if (waitFor) {
+		converted.push(factory.createTrue());
+		converted.push(node.arguments[1]);
 	}
 
 	return factory.createCallExpression(

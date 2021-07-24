@@ -12,6 +12,8 @@ function transformCallExpressionInner(
 	switch (functionName) {
 		case Macro.CALL_MACROS.$path:
 			return transformPathFunction(state, node);
+		case Macro.CALL_MACROS.$pathWaitFor:
+			return transformPathFunction(state, node, true);
 		default:
 			ErrorLogger.writeLine("Unsupported call marco name!");
 			process.exit(1);
