@@ -1,4 +1,5 @@
 import kleur from "kleur";
+import { PACKAGE_CONFIG } from "../constants";
 
 export class Logger {
 	constructor(
@@ -14,7 +15,11 @@ export class Logger {
 	}
 
 	public writeLine(text: string) {
-		console.log(`[${this.kleurFunction(this.header)}]: ${text}`);
+		console.log(
+			`${PACKAGE_CONFIG.name} | ${this.kleurFunction(
+				this.header,
+			)}: ${text}`,
+		);
 	}
 
 	public writeIfVerbose(text: string) {

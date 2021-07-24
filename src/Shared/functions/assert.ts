@@ -1,10 +1,13 @@
 import kleur from "kleur";
+import { PACKAGE_CONFIG } from "../constants";
 
 export class AssertError {
 	constructor(public condition: unknown, public text: string) {}
 
 	public toString() {
-		return `${kleur.bgRed("ASSERT ERROR")}: ${this.text}`;
+		return `${kleur.bgRed("ASSERT ERROR")}: ${
+			this.text
+		}\nThis error is from: ${PACKAGE_CONFIG.name}`;
 	}
 }
 
