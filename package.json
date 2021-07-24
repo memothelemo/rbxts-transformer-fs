@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "out/index.js",
   "license": "MIT",
+  "author": "memothelemo",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --w",
