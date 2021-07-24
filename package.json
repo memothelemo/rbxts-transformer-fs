@@ -1,5 +1,5 @@
 {
-  "name": "rbxts-transform-template",
+  "name": "rbxts-transformer-path",
   "version": "1.0.0",
   "main": "out/index.js",
   "license": "MIT",
