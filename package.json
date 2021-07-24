@@ -1,5 +1,5 @@
 {
-  "name": "rbxts-memo-transform-template",
+  "name": "rbxts-transform-template",
   "version": "1.0.0",
   "main": "out/index.js",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "watch": "tsc --w"
   },
   "devDependencies": {
-	"@types/node": "^16.4.1",
+    "@types/node": "^16.4.1",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
     "eslint": "^7.31.0",
@@ -16,5 +16,12 @@
     "eslint-plugin-prettier": "^3.4.0",
     "prettier": "^2.3.2",
     "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@types/fs-extra": "^9.0.12",
+    "ajv": "^8.6.2",
+    "byots": "^4.3.0-dev.20210326.17.17",
+    "fs-extra": "^10.0.0",
+    "kleur": "^4.1.4"
   }
 }
