@@ -9,7 +9,13 @@ export default function (program: ts.Program) {
 		process.stdout.write("\n");
 
 		const state = new TransformState(program, context);
-		const transformed = state.transformAll();
-		return file => transformed.get(file) ?? file;
+		let transformed: Map<ts.SourceFile, ts.SourceFile>;
+
+		return file => {
+			if (!transformed) {
+				transformed = state.transformAll();
+			}
+			return transformed.get(file) ?? file;
+		};
 	};
 }

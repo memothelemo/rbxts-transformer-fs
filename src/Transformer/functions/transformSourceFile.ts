@@ -7,7 +7,6 @@ export function transformSourceFile(
 	state: TransformState,
 	sourceFile: ts.SourceFile,
 ): ts.SourceFile {
-	/* Statement visitor */
 	sourceFile = ts.visitEachChild(
 		sourceFile,
 		node => {
