@@ -24,6 +24,8 @@ export class TransformState {
 		public program: ts.Program,
 		public context: ts.TransformationContext,
 	) {
+		this.setupRojo();
+
 		const projectPackage = getPackageJSON(this.currentDir);
 
 		this.packageName = projectPackage.name;
