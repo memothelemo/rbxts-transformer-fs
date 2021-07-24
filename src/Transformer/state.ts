@@ -30,7 +30,7 @@ export class TransformState {
 		this.setupRojo();
 
 		const projectPackage = getPackageJSON(this.currentDir);
-		assert(projectPackage, `Expected "package.json"`);
+		assert(projectPackage !== undefined, `Expected "package.json"`);
 
 		this.packageName = projectPackage.name;
 		this.isGame = !projectPackage.name.startsWith("@");

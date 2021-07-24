@@ -12,7 +12,7 @@ export function assert(
 	condition: unknown,
 	text = "Assertion failed!",
 ): asserts condition {
-	if (condition != null || condition === false) {
+	if (condition == null || condition === false) {
 		throw new AssertError(condition, text).toString();
 	}
 }
