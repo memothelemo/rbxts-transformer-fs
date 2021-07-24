@@ -5,7 +5,7 @@ export function getPackageJSON(dir: string) {
 	const targetFile = path.join(dir, "package.json");
 	let file: NPMPackage | undefined;
 	try {
-		file = require(dir);
+		file = require(targetFile);
 	} catch (_) {}
 	return file ?? ({} as NPMPackage);
 }
