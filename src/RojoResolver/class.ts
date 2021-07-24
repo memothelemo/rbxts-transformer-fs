@@ -165,6 +165,9 @@ export class Project {
 	private isolatedContainers = [...DEFAULT_ISOLATED_CONTAINERS];
 	public isGame = false;
 
+	// edited by me
+	public projectName!: string;
+
 	private parseConfig(rojoConfigFilePath: string, doNotPush = false) {
 		const realPath = fs.realpathSync(rojoConfigFilePath);
 		if (fs.pathExistsSync(realPath)) {
@@ -173,6 +176,7 @@ export class Project {
 				configJson = JSON.parse(fs.readFileSync(realPath).toString());
 			} catch (e) {}
 			if (isValidRojoConfig(configJson)) {
+				this.projectName = configJson.name;
 				this.parseTree(
 					path.dirname(rojoConfigFilePath),
 					configJson.name,

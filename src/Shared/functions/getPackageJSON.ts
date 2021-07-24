@@ -8,5 +8,5 @@ export function getPackageJSON(dir: string) {
 	try {
 		file = JSON.parse(fs.readFileSync(targetFile, "utf-8"));
 	} catch (_) {}
-	return file ?? ({} as NPMPackage);
+	return file as NPMPackage;
 }
