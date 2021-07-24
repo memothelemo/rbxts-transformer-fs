@@ -1,4 +1,4 @@
-import * as ts from "byots";
+import ts from "byots";
 import kleur from "kleur";
 import RojoResolver from "../RojoResolver";
 import { Logger } from "../Shared/classes/logger";
@@ -23,6 +23,8 @@ export class TransformState {
 	public packageName: string;
 	public isGame: boolean;
 
+	private replacedSourceFiles = new Map<ts.SourceFile, boolean>();
+
 	constructor(
 		public program: ts.Program,
 		public context: ts.TransformationContext,
@@ -34,6 +36,17 @@ export class TransformState {
 
 		this.packageName = projectPackage.name;
 		this.isGame = !projectPackage.name.startsWith("@");
+	}
+
+	public isSourceFileReplaced(sourceFile: ts.SourceFile) {
+		if (this.replacedSourceFiles.has(sourceFile)) {
+			return this.replacedSourceFiles.get(sourceFile);
+		}
+		return false;
+	}
+
+	public setSourceFileReplaced(sourceFile: ts.SourceFile) {
+		this.replacedSourceFiles.set(sourceFile, true);
 	}
 
 	public setupRojo() {

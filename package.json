@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --w"
+    "watch": "tsc --w",
+	"prepack": "yarn build"
   },
   "devDependencies": {
     "@types/node": "^16.4.1",
