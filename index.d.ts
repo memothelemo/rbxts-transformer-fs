@@ -1,1 +1,1 @@
-export function $path(path: string): void;
+export function $path<T>(path: string): T;

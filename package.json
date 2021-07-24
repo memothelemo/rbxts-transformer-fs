@@ -9,6 +9,13 @@
     "watch": "tsc --w",
 	"prepack": "yarn build"
   },
+  "repository": {
+	  "type": "git",
+	  "url": "https://github.com/memothelemo/rbxts-transformer-path"
+  },
+  "bugs": {
+	  "url": "https://github.com/memothelemo/rbxts-transformer-path/issues"
+  },
   "devDependencies": {
     "@types/node": "^16.4.1",
     "@typescript-eslint/eslint-plugin": "^4.28.4",

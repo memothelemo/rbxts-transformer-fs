@@ -26,6 +26,7 @@ getDescendantsWhichIsA(scripts, "ModuleScript").forEach((script) =>
 - Client-side paths are not tested yet but planned in the next version.
 - This transformer is bit unstable at this version especially a special function when transformed: `___getInstanceFromPath`.
 - It defaults to `default.project.json`, so be aware of that
+- It is designed for games, not plugins.
 
 ## Installation
 
