@@ -7,7 +7,7 @@ import { NPMPackage } from "./types";
 export const ErrorLogger = new Logger("ERROR", kleur.bgRed);
 export const WarnLogger = new Logger("Warning", kleur.bgYellow);
 
-export const PACKAGE_ROOT = path.join(__dirname, "..", "..", "..");
+export const PACKAGE_ROOT = path.join(__dirname, "..", "..");
 export const PACKAGE_CONFIG = require(path.join(
 	PACKAGE_ROOT,
 	"package.json",
