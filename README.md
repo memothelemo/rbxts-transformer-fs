@@ -24,9 +24,10 @@ getDescendantsWhichIsA(scripts, "ModuleScript").forEach((script) =>
 ## Warning
 
 - ~~Client-side paths are not tested yet but planned in the next version~~.
-- This transformer is bit unstable at this version especially a special function when transformed: `___getInstanceFromPath`.
-- It defaults to `default.project.json`
 - ~~It is designed for games, not plugins~~.
+- It is a bit unstable and unhelpful to errors and debugging
+- It is slow because of function generator (_I don't know how to optimize this_)
+- It defaults to `default.project.json`
 
 ## Installation
 

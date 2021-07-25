@@ -3,6 +3,83 @@ import RojoResolver from "../../RojoResolver";
 import { TransformState } from "../state";
 import { propertyAccessExpressionChain } from "../util/expressionChain";
 
+/*
+	function ___getInstanceFromPath<T>(entries: string[], waitFor = false, timeout?: number) {
+		let currentIndex = 0;
+		let lastParent: Instance = game;
+		let currentObject: Instance | undefined = game;
+		let modified = true;
+		switch (entries[0]) {
+			case "StarterPlayer":
+				currentObject = game.GetService("Players").LocalPlayer;
+				lastParent = currentObject;
+
+				switch (entries[1]) {
+					case "StarterCharacterScripts":
+						const character = (currentObject as Player).Character;
+						if (!character) {
+							error("The character isn't loaded but referenced from StarterCharacterScripts", 2);
+						}
+
+						currentObject = character;
+						lastParent = character;
+						break;
+					case "StarterPlayerScripts":
+						const scripts = (currentObject as Player & { PlayerScripts: PlayerScripts }).PlayerScripts;
+						currentObject = scripts;
+						lastParent = scripts;
+						break;
+					default:
+						error(`${entries[1]} is not a member of StarterPlayer!`);
+				}
+				break;
+			case "StarterGui":
+				const gui = (currentObject as Player).FindFirstChild("PlayerGui");
+				if (!gui) {
+					error("PlayerGui isn't loaded but referenced from PlayerGui");
+				}
+				currentObject = gui;
+				lastParent = currentObject;
+				break;
+			case "StarterPack":
+				const backpack = (currentObject as Player & { Backpack: Backpack }).Backpack;
+				currentObject = backpack;
+				lastParent = currentObject;
+				break;
+			default:
+				modified = false;
+				break;
+		}
+
+		if (modified) {
+			entries.remove(0);
+			entries.remove(0);
+		}
+
+		while (currentIndex < entries.size() && currentObject !== undefined) {
+			lastParent = currentObject;
+			currentObject = waitFor
+				? currentObject.WaitForChild(entries[currentIndex], timeout as number)
+				: currentObject.FindFirstChild(entries[currentIndex]);
+
+			currentIndex++;
+		}
+
+		if (currentObject === undefined) {
+			entries.unshift("game");
+
+			error(
+				`Cannot find ${entries.join(".")} because ${
+					entries[currentIndex]
+				} is not a child of ${lastParent.GetFullName()}`,
+				2,
+			);
+		}
+
+		return currentObject as unknown as T;
+	}
+*/
+
 export function generateGetInstanceFromPath(
 	state: TransformState,
 	sourceFile: ts.SourceFile,
