@@ -1,11 +1,12 @@
 import ts from "byots";
 import Transformer from "./Transformer";
+import { TransformerConfig } from "./Transformer/config";
 
-export default function (program: ts.Program) {
+export default function (program: ts.Program, config: TransformerConfig) {
 	return (
 		context: ts.TransformationContext,
 	): ((file: ts.SourceFile) => ts.SourceFile) => {
-		const state = new Transformer.State(program, context);
+		const state = new Transformer.State(program, context, config);
 		let transformed: Map<ts.SourceFile, ts.SourceFile>;
 		return file => {
 			if (!transformed) {

@@ -1,20 +1,20 @@
 {
   "name": "rbxts-transformer-path",
-  "version": "1.0.2-2",
+  "version": "1.0.3-1",
   "main": "out/index.js",
   "license": "MIT",
   "author": "memothelemo",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --w",
-	"prepack": "yarn build"
+    "prepack": "yarn build"
   },
   "repository": {
-	  "type": "git",
-	  "url": "https://github.com/memothelemo/rbxts-transformer-path"
+    "type": "git",
+    "url": "https://github.com/memothelemo/rbxts-transformer-path"
   },
   "bugs": {
-	  "url": "https://github.com/memothelemo/rbxts-transformer-path/issues"
+    "url": "https://github.com/memothelemo/rbxts-transformer-path/issues"
   },
   "devDependencies": {
     "@types/node": "^16.4.1",

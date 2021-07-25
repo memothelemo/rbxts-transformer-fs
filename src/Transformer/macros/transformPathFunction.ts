@@ -59,12 +59,15 @@ export function transformPathFunction(
 
 	if (waitFor) {
 		converted.push(factory.createTrue());
-		converted.push(node.arguments[1]);
+		if (node.arguments[1]) {
+			converted.push(node.arguments[1]);
+		}
 	}
 
+	/* Get the second argument (timeout) if possible */
 	return factory.createCallExpression(
 		factory.createIdentifier("___getInstanceFromPath"),
-		typeArgument ? [typeArgument] : undefined,
+		typeArgument ? [typeArgument] : [],
 		converted,
 	);
 }

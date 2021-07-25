@@ -1,16 +1,19 @@
 import ts from "byots";
 import RojoResolver from "../RojoResolver";
+import { assert } from "../Shared/functions/assert";
 import { ProjectType } from "../RojoResolver/constants";
 import { PathTranslator } from "../Shared/classes/pathTranslator";
 import { SOURCE_MODULE_TEXT } from "../Shared/constants";
 import { getPackageJSON } from "../Shared/functions/getPackageJSON";
 import { transformSourceFile } from "./functions/transformSourceFile";
+import { TransformerConfig } from "./config";
+import path from "path/posix";
 
 export class TransformState {
 	public currentDir = this.program.getCurrentDirectory();
 
 	public typeChecker = this.program.getTypeChecker();
-	public rojoResolver?: RojoResolver.Project;
+	public rojoResolver!: RojoResolver.Project;
 	public pathTranslator!: PathTranslator;
 
 	public options = this.program.getCompilerOptions();
@@ -23,6 +26,7 @@ export class TransformState {
 	public constructor(
 		public program: ts.Program,
 		public context: ts.TransformationContext,
+		public config: TransformerConfig,
 	) {
 		this.setupRojo();
 
@@ -31,7 +35,8 @@ export class TransformState {
 		this.packageName = projectPackage.name;
 
 		/* ProjectPackage is not the solution here, we need to verify also from RojoResolver */
-		if (this.rojoResolver?.isGame) {
+		assert(this.rojoResolver, "Rojo cannot be resolved");
+		if (this.rojoResolver.isGame) {
 			this.projectType = ProjectType.Game;
 		} else {
 			if (this.packageName.startsWith("@")) {
@@ -55,7 +60,9 @@ export class TransformState {
 		);
 
 		const rojoConfig = RojoResolver.Project.findRojoConfigFilePath(
-			this.program.getCurrentDirectory(),
+			this.config.projectFile
+				? path.join(this.currentDir, this.config.projectFile)
+				: this.currentDir,
 		);
 
 		if (rojoConfig) {

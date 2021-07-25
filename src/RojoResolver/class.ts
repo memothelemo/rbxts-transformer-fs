@@ -140,6 +140,7 @@ export class Project {
 		if (candidates.length > 1) {
 			warn(`Multiple *.project.json files found, using ${candidates[0]}`);
 		}
+
 		return candidates[0];
 	}
 
@@ -365,6 +366,18 @@ export class Project {
 			return NetworkType.Client;
 		}
 		return NetworkType.Unknown;
+	}
+
+	public static relativeToRootFromScript(rbxFrom: RbxPath) {
+		/* it's better than nothing */
+		const result = new Array<string | RbxPathParent>();
+		for (let i = 0; i < rbxFrom.length; i++) {
+			result.push(RbxPathParent);
+		}
+
+		/* Don't forget to put script otherwise it will cause problems */
+		result.unshift("script");
+		return result;
 	}
 
 	public static relative(rbxFrom: RbxPath, rbxTo: RbxPath): RelativeRbxPath {
