@@ -78,6 +78,11 @@ export class TransformState {
 		return ts.getSourceFileOfNode(node);
 	}
 
+	public getType(node: ts.Node): ts.Type | undefined {
+		const type = this.typeChecker.getTypeAtLocation(node);
+		return type;
+	}
+
 	public getSymbol(node: ts.Node): ts.Symbol | undefined {
 		const symbol = this.typeChecker.getSymbolAtLocation(node);
 		return symbol;

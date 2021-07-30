@@ -2,6 +2,7 @@ import ts, { factory } from "byots";
 import path from "path";
 import { Diagnostics } from "../../Shared/diagnostics";
 import { assert } from "../../Shared/functions/assert";
+import { getStringLiteralType } from "../functions/getIdentifierType";
 import { TransformState } from "../state";
 
 export function getPathFromSpecifier(
@@ -42,19 +43,29 @@ export function transformPathFunction(
 
 	const converted = new Array<ts.Expression>();
 	const pathArg = node.arguments[0];
+	let pathArgText: string;
 
+	// instead of display an error if it is not a string literal
+	// we can get the type of it (only for identifiers)
 	if (!ts.isStringLiteral(pathArg)) {
-		Diagnostics.error(
-			node,
-			"Path argument must be totally string! Not even a single variable",
-		);
+		if (ts.isIdentifier(pathArg)) {
+			const contents = getStringLiteralType(state, pathArg);
+			pathArgText = contents.value;
+		} else {
+			Diagnostics.error(
+				node,
+				"Path argument must be a string or complete string type, seriously",
+			);
+		}
+	} else {
+		pathArgText = pathArg.text;
 	}
 
 	const rbxPath = getPathFromSpecifier(
 		state,
 		state.getSourceFile(node),
 		state.currentDir,
-		pathArg.text,
+		pathArgText,
 	);
 
 	if (!rbxPath) {

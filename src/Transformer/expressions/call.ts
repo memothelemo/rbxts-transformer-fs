@@ -14,7 +14,10 @@ function transformCallExpressionInner(
 		case "$pathWaitFor":
 			return transformPathFunction(state, node, true);
 		default:
-			Diagnostics.error(node, "Unsupported call marco name!");
+			Diagnostics.error(
+				node,
+				`${functionName} is an unsupported marco call name!`,
+			);
 	}
 }
 
