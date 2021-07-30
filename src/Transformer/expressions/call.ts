@@ -2,6 +2,7 @@ import ts from "byots";
 import { ErrorLogger } from "../../Shared/constants";
 import { transformPathFunction } from "../macros/transformPathFunction";
 import { TransformState } from "../state";
+import { Diagnostics } from "../../Shared/diagnostics";
 
 function transformCallExpressionInner(
 	state: TransformState,
@@ -14,8 +15,7 @@ function transformCallExpressionInner(
 		case "$pathWaitFor":
 			return transformPathFunction(state, node, true);
 		default:
-			ErrorLogger.writeLine("Unsupported call marco name!");
-			process.exit(1);
+			Diagnostics.error(node, "Unsupported call marco name!");
 	}
 }
 

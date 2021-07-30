@@ -1,5 +1,6 @@
 import ts, { factory } from "byots";
 import path from "path";
+import { Diagnostics } from "../../Shared/diagnostics";
 import { assert } from "../../Shared/functions/assert";
 import { TransformState } from "../state";
 
@@ -24,7 +25,10 @@ export function transformPathFunction(
 	waitFor?: boolean,
 ) {
 	if (!state.rojoResolver) {
-		throw new Error("$path was used but Rojo could not be resolved");
+		Diagnostics.error(
+			node,
+			"$path was used but Rojo could not be resolved",
+		);
 	}
 
 	let typeArgument: ts.TypeNode | undefined;
@@ -38,10 +42,13 @@ export function transformPathFunction(
 
 	const converted = new Array<ts.Expression>();
 	const pathArg = node.arguments[0];
-	assert(
-		ts.isStringLiteral(pathArg),
-		"Path argument must be totally string! Not even a single variable",
-	);
+
+	if (!ts.isStringLiteral(pathArg)) {
+		Diagnostics.error(
+			node,
+			"Path argument must be totally string! Not even a single variable",
+		);
+	}
 
 	const rbxPath = getPathFromSpecifier(
 		state,
@@ -50,7 +57,10 @@ export function transformPathFunction(
 		pathArg.text,
 	);
 
-	assert(rbxPath, "Could not find rojo data");
+	if (!rbxPath) {
+		Diagnostics.error(node, "Could not find rojo data");
+	}
+
 	converted.push(
 		factory.createArrayLiteralExpression(
 			rbxPath.map(v => factory.createStringLiteral(v)),
