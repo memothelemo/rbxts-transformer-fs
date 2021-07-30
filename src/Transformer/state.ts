@@ -47,6 +47,10 @@ export class TransformState {
 		}
 	}
 
+	public addDiagonstic(diagnostic: ts.DiagnosticWithLocation) {
+		this.context.addDiagnostic(diagnostic);
+	}
+
 	public isTransformerModule(sourceFile: ts.SourceFile) {
 		return sourceFile.text === SOURCE_MODULE_TEXT;
 	}
