@@ -8,8 +8,10 @@ export function transformOr<T extends ts.Node>(original: T, setter: () => T) {
 	try {
 		currentNode = setter();
 	} catch (e) {
-		if (!(e instanceof DiagnosticError)) {
-			throw e;
+		if (typeof e === "object" && e != null) {
+			if (!("diagnostic" in e)) {
+				throw e;
+			}
 		}
 	}
 	currentNode ??= original;

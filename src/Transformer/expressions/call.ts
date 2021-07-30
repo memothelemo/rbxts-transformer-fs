@@ -1,5 +1,4 @@
 import ts from "byots";
-import { ErrorLogger } from "../../Shared/constants";
 import { transformPathFunction } from "../macros/transformPathFunction";
 import { TransformState } from "../state";
 import { Diagnostics } from "../../Shared/diagnostics";
