@@ -74,6 +74,7 @@ export function transformImportDeclaration(
 		finalReturn.push(
 			generateGetInstanceFromPath(state, state.getSourceFile(node)),
 		);
+
 		return finalReturn;
 	}
 	return node;

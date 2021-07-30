@@ -23,11 +23,12 @@ getDescendantsWhichIsA(scripts, "ModuleScript").forEach((script) =>
 
 ## Warning
 
-- ~~Client-side paths are not tested yet but planned in the next version~~.
-- ~~It is designed for games, not plugins~~.
-- It is a bit unstable and unhelpful to errors and debugging
+- ~~Client-side paths are not tested yet but planned in the next version~~
+- ~~It is designed for games, not plugins~~
+- ~~It is unhelpful to errors and debugging~~
+- ~~It defaults to `default.project.json`~~
+- It is a bit unstable.
 - It is slow because of function generator (_I don't know how to optimize this_)
-- It defaults to `default.project.json`
 
 ## Installation
 
@@ -44,3 +45,10 @@ npm i rbxts-transformer-path
 	{ "transform": "rbxts-transformer-path" }
 ]
 ```
+
+## Credits
+
+Credits for the code to:
+
+- roblox-ts (for [Rojo project stuff](https://github.com/roblox-ts/roblox-ts/blob/master/src/Shared/classes/RojoResolver.ts) it's kinda complicated to make it one, well I did but it's not working)
+- [@flamework/transformer](https://github.com/rbxts-flamework/transformer)

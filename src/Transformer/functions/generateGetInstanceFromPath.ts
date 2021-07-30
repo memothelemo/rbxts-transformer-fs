@@ -2,6 +2,7 @@ import ts, { factory } from "byots";
 import RojoResolver from "../../RojoResolver";
 import { TransformState } from "../state";
 import { propertyAccessExpressionChain } from "../util/expressionChain";
+import { Diagnostics } from "../../Shared/diagnostics";
 
 /*
 	function ___getInstanceFromPath<T>(entries: string[], waitFor = false, timeout?: number) {
@@ -91,6 +92,13 @@ export function generateGetInstanceFromPath(
 		root = factory.createIdentifier("game");
 		stringedRoot = "game";
 	} else {
+		if (!state.rojoResolver) {
+			Diagnostics.error(
+				sourceFile,
+				"rbxts-transformer-path was imported but Rojo could not be resolved",
+			);
+		}
+
 		const sourceOutPath = state.pathTranslator.getOutputPath(
 			sourceFile.fileName,
 		);

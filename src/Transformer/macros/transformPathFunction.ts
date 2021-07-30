@@ -1,6 +1,8 @@
 import ts, { factory } from "byots";
 import path from "path";
+import { Diagnostics } from "../../Shared/diagnostics";
 import { assert } from "../../Shared/functions/assert";
+import { getStringLiteralType } from "../functions/getIdentifierType";
 import { TransformState } from "../state";
 
 export function getPathFromSpecifier(
@@ -24,7 +26,10 @@ export function transformPathFunction(
 	waitFor?: boolean,
 ) {
 	if (!state.rojoResolver) {
-		throw new Error("$path was used but Rojo could not be resolved");
+		Diagnostics.error(
+			node,
+			"$path was used but Rojo could not be resolved",
+		);
 	}
 
 	let typeArgument: ts.TypeNode | undefined;
@@ -38,19 +43,35 @@ export function transformPathFunction(
 
 	const converted = new Array<ts.Expression>();
 	const pathArg = node.arguments[0];
-	assert(
-		ts.isStringLiteral(pathArg),
-		"Path argument must be totally string! Not even a single variable",
-	);
+	let pathArgText: string;
+
+	// instead of display an error if it is not a string literal
+	// we can get the type of it (only for identifiers)
+	if (!ts.isStringLiteral(pathArg)) {
+		if (ts.isIdentifier(pathArg)) {
+			const contents = getStringLiteralType(state, pathArg);
+			pathArgText = contents.value;
+		} else {
+			Diagnostics.error(
+				node,
+				"Path argument must be a string or complete string type, seriously",
+			);
+		}
+	} else {
+		pathArgText = pathArg.text;
+	}
 
 	const rbxPath = getPathFromSpecifier(
 		state,
 		state.getSourceFile(node),
 		state.currentDir,
-		pathArg.text,
+		pathArgText,
 	);
 
-	assert(rbxPath, "Could not find rojo data");
+	if (!rbxPath) {
+		Diagnostics.error(node, "Could not find rojo data");
+	}
+
 	converted.push(
 		factory.createArrayLiteralExpression(
 			rbxPath.map(v => factory.createStringLiteral(v)),
