@@ -1,4 +1,4 @@
-import ts, { factory } from "byots";
+import ts, { factory } from "typescript";
 import { TransformState } from "../state";
 
 export function propertyAccessExpressionChain(

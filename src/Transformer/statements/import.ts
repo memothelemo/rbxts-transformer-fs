@@ -1,4 +1,4 @@
-import ts, { factory } from "byots";
+import ts, { factory } from "typescript";
 import { generateGetInstanceFromPath } from "../functions/generateGetInstanceFromPath";
 import { TransformState } from "../state";
 

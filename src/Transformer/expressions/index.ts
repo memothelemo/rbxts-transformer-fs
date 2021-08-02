@@ -1,4 +1,4 @@
-import ts from "byots";
+import ts from "typescript";
 import { TransformState } from "../state";
 import { transformCallExpression } from "./call";
 

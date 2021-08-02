@@ -1,4 +1,4 @@
-import ts from "byots";
+import ts from "typescript";
 import { transformPathFunction } from "../macros/transformPathFunction";
 import { TransformState } from "../state";
 import { Diagnostics } from "../../Shared/diagnostics";

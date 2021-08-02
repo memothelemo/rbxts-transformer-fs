@@ -1,4 +1,4 @@
-import ts from "byots";
+import ts from "typescript";
 
 export class DiagnosticError extends Error {
 	constructor(public diagnostic: ts.DiagnosticWithLocation) {

@@ -1,6 +1,7 @@
-import ts from "byots";
+import ts from "typescript";
 import Transformer from "./Transformer";
 import { TransformerConfig } from "./Transformer/config";
+import {} from "ts-expose-internals";
 
 export default function (program: ts.Program, config: TransformerConfig) {
 	return (

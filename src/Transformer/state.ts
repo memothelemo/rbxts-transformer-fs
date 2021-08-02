@@ -1,4 +1,4 @@
-import ts from "byots";
+import ts from "typescript";
 import RojoResolver from "../RojoResolver";
 import { ProjectType } from "../RojoResolver/constants";
 import { PathTranslator } from "../Shared/classes/pathTranslator";

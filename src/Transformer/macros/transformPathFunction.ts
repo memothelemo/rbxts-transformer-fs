@@ -1,7 +1,6 @@
-import ts, { factory } from "byots";
+import ts, { factory } from "typescript";
 import path from "path";
 import { Diagnostics } from "../../Shared/diagnostics";
-import { assert } from "../../Shared/functions/assert";
 import { getStringLiteralType } from "../functions/getIdentifierType";
 import { TransformState } from "../state";
 

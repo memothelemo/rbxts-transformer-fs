@@ -1,4 +1,4 @@
-import ts, { factory } from "byots";
+import ts, { factory } from "typescript";
 import RojoResolver from "../../RojoResolver";
 import { TransformState } from "../state";
 import { propertyAccessExpressionChain } from "../util/expressionChain";

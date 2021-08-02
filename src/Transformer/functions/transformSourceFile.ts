@@ -1,4 +1,4 @@
-import ts from "byots";
+import ts from "typescript";
 import { DiagnosticError, Diagnostics } from "../../Shared/diagnostics";
 import { TransformState } from "../state";
 import { transformNode } from "./transformNode";

@@ -250,11 +250,6 @@ braces@^3.0.1:
   dependencies:
     fill-range "^7.0.1"
 
-byots@^4.3.0-dev.20210326.17.17:
-  version "4.3.0-dev.20210326.17.17"
-  resolved "https://registry.yarnpkg.com/byots/-/byots-4.3.0-dev.20210326.17.17.tgz#d77c872bd17f0f7d02ed457b9db3ec1ffa5e28a4"
-  integrity sha512-kJCl+d+Ev4SrX5i/aYO6YM4FCxJFNClNRjG+GB2AwnfaHAUf+lYmOQ7n+IRSrajQI5Yay1mh1eRwVa3qzOuc1A==
-
 callsites@^3.0.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/callsites/-/callsites-3.1.0.tgz"
@@ -1006,6 +1001,11 @@ to-regex-range@^5.0.1:
   integrity sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
   dependencies:
     is-number "^7.0.0"
+
+ts-expose-internals@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/ts-expose-internals/-/ts-expose-internals-4.3.2.tgz#99ea3fd7b2b0750e994143c20fe269a5d434dee1"
+  integrity sha512-QqBZDp8fOVFW+/+taGQXx6K/gmU+/Zs9yLxcZcrMObHhmvqBzuImjIU7ZTY/HfcZStO2eXWtJrIlFNjepCV1ew==
 
 tslib@^1.8.1:
   version "1.14.1"

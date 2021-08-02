@@ -1,4 +1,4 @@
-import ts from "byots";
+import ts from "typescript";
 import { transformExpression } from "../expressions";
 import { TransformState } from "../state";
 import { transformStatement } from "../statements";
