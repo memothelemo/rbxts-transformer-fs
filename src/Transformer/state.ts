@@ -4,7 +4,6 @@ import { ProjectType } from "../RojoResolver/constants";
 import { PathTranslator } from "../Shared/classes/pathTranslator";
 import { SOURCE_MODULE_TEXT } from "../Shared/constants";
 import { getPackageJSON } from "../Shared/functions/getPackageJSON";
-import { transformSourceFile } from "./functions/transformSourceFile";
 import { TransformerConfig } from "./config";
 import path from "path";
 import { parseCommandLine } from "./util/parseCommandLine";
@@ -86,15 +85,5 @@ export class TransformState {
 	public getSymbol(node: ts.Node): ts.Symbol | undefined {
 		const symbol = this.typeChecker.getSymbolAtLocation(node);
 		return symbol;
-	}
-
-	public transformAll() {
-		const map = new Map<ts.SourceFile, ts.SourceFile>();
-		this.program
-			.getSourceFiles()
-			.forEach(source =>
-				map.set(source, transformSourceFile(this, source)),
-			);
-		return map;
 	}
 }
