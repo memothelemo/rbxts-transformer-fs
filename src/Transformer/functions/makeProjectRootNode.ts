@@ -32,6 +32,8 @@ export function makeProjectRootNode(state: TransformState, node: ts.Node) {
 		Diagnostics.error(node, "Unknown source file");
 	}
 
+	rbxPath.unshift("script");
+
 	const relative = RojoResolver.Project.relativeToRootFromScript(rbxPath);
 	const realNames = relative.map(v =>
 		v === RojoResolver.RbxPathParent ? "Parent" : v,
