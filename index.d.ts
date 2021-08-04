@@ -12,16 +12,25 @@ export function $path<T>(path: string): T;
  */
 export function $pathWaitFor<T>(path: string, timeout?: number): T;
 
-/** It replaces to the location of the source file (filesystem) */
+/**
+ * It replaces to the location of the source file (filesystem)
+ *
+ * **From**:
+ * `print($fileName() + " goodbye!")`
+ *
+ * **To**:
+ * `print("src/example.ts" + " goodbye!")`
+ */
 export function $fileName(): string;
 
 /**
- * It replaces the root Roblox structure path
+ * It replaces the root Roblox structure path depending on
+ * the Rojo project configuration
  *
- * From:
- * $root<Instance>().GetChildren();
+ * **From**:
+ * `$root<Instance>().GetChildren();`
  *
- * To:
- * script.Parent.Parent.Parent.GetChildren()
+ * **To**:
+ * `script.Parent!.Parent!.Parent!.GetChildren()`
  */
 export function $root<T>(): T;
