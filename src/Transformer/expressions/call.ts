@@ -16,6 +16,8 @@ function transformCallExpressionInner(
 			return transformPathFunction(state, node, true);
 		case "$fileName":
 			return transformFileNameFunction(state, node);
+		case "$root":
+			return;
 		default:
 			Diagnostics.error(
 				node,

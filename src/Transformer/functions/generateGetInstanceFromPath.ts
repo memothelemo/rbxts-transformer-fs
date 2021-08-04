@@ -3,6 +3,7 @@ import RojoResolver from "../../RojoResolver";
 import { TransformState } from "../state";
 import { propertyAccessExpressionChain } from "../util/expressionChain";
 import { Diagnostics } from "../../Shared/diagnostics";
+import { makeProjectRootNode } from "./makeProjectRootNode";
 
 /*
 	function ___getInstanceFromPath<T>(entries: string[], waitFor = false, timeout?: number) {
@@ -85,34 +86,7 @@ export function generateGetInstanceFromPath(
 	state: TransformState,
 	sourceFile: ts.SourceFile,
 ) {
-	let root: ts.Identifier | ts.PropertyAccessExpression;
-	let stringedRoot: string;
-
-	if (state.projectType === RojoResolver.ProjectType.Game) {
-		root = factory.createIdentifier("game");
-		stringedRoot = "game";
-	} else {
-		if (!state.rojoResolver) {
-			Diagnostics.error(
-				sourceFile,
-				"rbxts-transformer-path was imported but Rojo could not be resolved",
-			);
-		}
-
-		const sourceOutPath = state.pathTranslator.getOutputPath(
-			sourceFile.fileName,
-		);
-
-		const rbxPath =
-			state.rojoResolver.getRbxPathFromFilePath(sourceOutPath)!;
-
-		const names = RojoResolver.Project.relativeToRootFromScript(
-			rbxPath,
-		).map(v => (v === RojoResolver.RbxPathParent ? "Parent!" : v));
-
-		root = propertyAccessExpressionChain(state, names);
-		stringedRoot = names.join(".");
-	}
+	const { node, string } = makeProjectRootNode(state, sourceFile);
 
 	return factory.createFunctionDeclaration(
 		undefined,
@@ -185,7 +159,7 @@ export function generateGetInstanceFromPath(
 									factory.createIdentifier("Instance"),
 									undefined,
 								),
-								ts.clone(root),
+								ts.clone(node),
 							),
 						],
 						ts.NodeFlags.Let,
@@ -207,7 +181,7 @@ export function generateGetInstanceFromPath(
 										ts.SyntaxKind.UndefinedKeyword,
 									),
 								]),
-								ts.clone(root),
+								ts.clone(node),
 							),
 						],
 						ts.NodeFlags.Let,
@@ -865,7 +839,7 @@ export function generateGetInstanceFromPath(
 										factory.createIdentifier("unshift"),
 									),
 									undefined,
-									[factory.createStringLiteral(stringedRoot)],
+									[factory.createStringLiteral(string)],
 								),
 							),
 							factory.createExpressionStatement(
