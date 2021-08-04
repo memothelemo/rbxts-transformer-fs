@@ -86,6 +86,8 @@ export function generateGetInstanceFromPath(
 	state: TransformState,
 	sourceFile: ts.SourceFile,
 ) {
+	state.printInVerbose("Generating ___getInstanceFromPath function");
+
 	const { node, string } = makeProjectRootNode(state, sourceFile);
 
 	return factory.createFunctionDeclaration(

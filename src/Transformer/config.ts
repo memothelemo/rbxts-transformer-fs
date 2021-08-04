@@ -1,3 +1,7 @@
 export interface TransformerConfig {
-	projectFile?: string;
+	verboseMode: boolean;
 }
+
+export const DEFAULT_CONFIG: TransformerConfig = {
+	verboseMode: false,
+};

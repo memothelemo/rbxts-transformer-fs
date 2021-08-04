@@ -3,12 +3,15 @@ import { transformPathFunction } from "../macros/transformPathFunction";
 import { TransformState } from "../state";
 import { Diagnostics } from "../../Shared/diagnostics";
 import { transformFileNameFunction } from "../macros/transformFileNameFunction";
+import { transformRootFunction } from "../macros/transformRootFunction";
 
 function transformCallExpressionInner(
 	state: TransformState,
 	node: ts.CallExpression,
 	functionName: string,
 ) {
+	state.printInVerbose(`Call macros found! Name: ${functionName}`);
+
 	switch (functionName) {
 		case "$path":
 			return transformPathFunction(state, node);
@@ -17,7 +20,7 @@ function transformCallExpressionInner(
 		case "$fileName":
 			return transformFileNameFunction(state, node);
 		case "$root":
-			return;
+			return transformRootFunction(state, node);
 		default:
 			Diagnostics.error(
 				node,

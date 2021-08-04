@@ -5,12 +5,19 @@ import { PathTranslator } from "../Shared/classes/pathTranslator";
 import { SOURCE_MODULE_TEXT } from "../Shared/constants";
 import { getPackageJSON } from "../Shared/functions/getPackageJSON";
 import { TransformerConfig } from "./config";
-import path from "path";
 import { parseCommandLine } from "./util/parseCommandLine";
+import { Logger } from "../Shared/classes/logger";
+import kleur from "kleur";
 
 export class TransformState {
 	public parsedCommandLine = parseCommandLine();
 	public currentDir = this.parsedCommandLine.project;
+
+	private logger = new Logger(
+		"Verbose",
+		kleur.bgGreen,
+		this.config.verboseMode,
+	);
 
 	public typeChecker = this.program.getTypeChecker();
 	public rojoResolver?: RojoResolver.Project;
@@ -54,7 +61,13 @@ export class TransformState {
 		return sourceFile.text === SOURCE_MODULE_TEXT;
 	}
 
+	public printInVerbose(text: string) {
+		this.logger.writeIfVerbose(text);
+	}
+
 	public setupRojo() {
+		this.printInVerbose("Initializing RojoResolver");
+
 		this.pathTranslator = new PathTranslator(
 			this.srcDir,
 			this.outDir,
@@ -63,9 +76,7 @@ export class TransformState {
 		);
 
 		const rojoConfig = RojoResolver.Project.findRojoConfigFilePath(
-			this.config.projectFile
-				? path.join(this.currentDir, this.config.projectFile)
-				: this.currentDir,
+			this.currentDir,
 		);
 
 		if (rojoConfig) {

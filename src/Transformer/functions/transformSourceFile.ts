@@ -22,6 +22,8 @@ export function transformSourceFile(
 	state: TransformState,
 	sourceFile: ts.SourceFile,
 ) {
+	state.printInVerbose(`Transforming source file: ${sourceFile.fileName}`);
+
 	const visitNode: ts.Visitor = node =>
 		ts.visitEachChild(
 			transformOr(node, () => transformNode(state, node)),

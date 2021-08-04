@@ -9,6 +9,8 @@ export default function (program: ts.Program, config: TransformerConfig) {
 		context: ts.TransformationContext,
 	): ((file: ts.SourceFile) => ts.SourceFile) => {
 		const state = new Transformer.State(program, context, config);
+		state.printInVerbose("Initializing transformer state");
+
 		return file => transformSourceFile(state, file);
 	};
 }
