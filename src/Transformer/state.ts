@@ -15,7 +15,7 @@ export class TransformState {
 
 	private logger = new Logger(
 		"Verbose",
-		kleur.bgGreen,
+		kleur.bgBlue,
 		this.config.verboseMode,
 	);
 
