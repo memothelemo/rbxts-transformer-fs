@@ -2,6 +2,7 @@ import ts from "typescript";
 import { transformPathFunction } from "../macros/transformPathFunction";
 import { TransformState } from "../state";
 import { Diagnostics } from "../../Shared/diagnostics";
+import { transformFileNameFunction } from "../macros/transformFileNameFunction";
 
 function transformCallExpressionInner(
 	state: TransformState,
@@ -13,6 +14,8 @@ function transformCallExpressionInner(
 			return transformPathFunction(state, node);
 		case "$pathWaitFor":
 			return transformPathFunction(state, node, true);
+		case "$fileName":
+			return transformFileNameFunction(state, node);
 		default:
 			Diagnostics.error(
 				node,

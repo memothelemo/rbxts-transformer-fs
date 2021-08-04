@@ -11,3 +11,8 @@ export function $path<T>(path: string): T;
  * @param timeout
  */
 export function $pathWaitFor<T>(path: string, timeout?: number): T;
+
+/**
+ * It replaces to the location of the source file (filesystem)
+ */
+export function $fileName(): string;
