@@ -4,6 +4,7 @@ import fs from "fs";
 
 interface CommandLine {
 	tsconfigPath: string;
+	verboseMode: boolean;
 	project: string;
 }
 
@@ -25,6 +26,8 @@ export function parseCommandLine(): CommandLine {
 		x => x === "-p" || x === "--project",
 	);
 
+	const verboseIndex = process.argv.findIndex(x => x == "--verbose");
+
 	if (projectIndex !== -1) {
 		options.tsconfigPath = findTsConfigPathFromDir(
 			process.argv[projectIndex + 1],
@@ -34,5 +37,7 @@ export function parseCommandLine(): CommandLine {
 	}
 
 	options.project = path.dirname(options.tsconfigPath);
+	options.verboseMode = verboseIndex !== -1;
+
 	return options;
 }

@@ -35,6 +35,12 @@ export class TransformState {
 		public context: ts.TransformationContext,
 		public config: TransformerConfig,
 	) {
+		if (this.parsedCommandLine.verboseMode && this.config.verboseMode) {
+			// roblox-ts doesn't return new line, so it will automatically
+			// returns a new line if both verbose modes are activated
+			process.stdout.write("\n");
+		}
+
 		this.setupRojo();
 
 		const projectPackage = getPackageJSON(this.currentDir);
