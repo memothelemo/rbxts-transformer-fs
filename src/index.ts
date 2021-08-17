@@ -1,7 +1,9 @@
-import ts from "typescript";
+import type ts from "typescript";
 import {} from "ts-expose-internals";
 import { TransformContext } from "./transformer/context";
-import { benchmarkReturn } from "./shared/util/benchmark";
+import Rojo from "./rojo";
+
+Rojo.FILE_REGEX;
 
 export default function (program: ts.Program) {
 	return (tsContext: ts.TransformationContext) => {

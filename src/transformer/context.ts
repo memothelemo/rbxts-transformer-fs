@@ -1,4 +1,5 @@
 import ts from "typescript";
+import Rojo from "../rojo";
 
 /**
  * **TransformContext** is a class where it is responsible
@@ -11,9 +12,16 @@ export class TransformContext {
 	/** Compiled source directory */
 	public outDir: string;
 
+	/** Rojo project itself */
+	public rojoProject!: Rojo.Project;
+
+	/** Is this the entire project, a game? */
+	// in case if rojo.Project goes wrong
+	public isGame = false;
+
 	public constructor(
 		/** Current working project directory of the file */
-		public projectDir: string,
+		public readonly projectDir: string,
 
 		/** Compiler options in TypeScript */
 		public readonly tsOptions: ts.CompilerOptions,
@@ -26,6 +34,16 @@ export class TransformContext {
 	) {
 		this.srcDir = this.tsOptions.rootDir ?? this.projectDir;
 		this.outDir = this.tsOptions.outDir ?? this.projectDir;
+
+		this.setupRojo();
+	}
+
+	/** Setups rojo project */
+	private setupRojo() {
+		const rojoConfig = Rojo.Utils.findRojoConfigFilePath(this.projectDir);
+		if (rojoConfig) {
+			this.rojoProject = Rojo.Project.fromPath(rojoConfig);
+		}
 	}
 
 	/** Gets the source file of the node */
