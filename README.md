@@ -1,54 +1,33 @@
-# rbxts-transformer-path
+# rbxts-transformer-fs
 
-A transformer designed for roblox-ts that allows to convert from filesystem project paths to pure Roblox tree structure (rojo required)
+**rbxts-transformer-ts** is a transformer designed for roblox-ts.
 
-```ts
-import { $path } from "rbxts-transformer-path";
-
-const scripts = $path<Folder>("src/server/scripts");
-
-function getDescendantsWhichIsA<T extends keyof Instances>(
-  parent: Instance,
-  className: T
-) {
-  return parent
-    .GetDescendants()
-    .filter((object): object is Instances[T] => object.IsA(className));
-}
-
-getDescendantsWhichIsA(scripts, "ModuleScript").forEach((script) =>
-  require(script)
-);
-```
+It allows to use or mainpulate project filesystem and do the transformer its thing.
 
 ## Warning
 
-- ~~Client-side paths are not tested yet but planned in the next version~~
-- ~~It is designed for games, not plugins~~
-- ~~It is unhelpful to errors and debugging~~
-- ~~It defaults to `default.project.json`~~
-- It is a bit unstable.
-- It is slow because of function generator (_I don't know how to optimize this_)
+_If you installed rbxts-transformer-path, please replace it with rbxts-transformer-ts and good to go!_
 
-## Installation
+## Usage
 
-1. Run this command below:
+```ts
+import { Players } from "@rbxts/services";
+import { $readJSON } from "rbxts-transformer-fs";
 
-```bash
-npm i rbxts-transformer-path
+const secrets = $readJSON<{
+  token: string;
+  password: number;
+}>("secrets.json");
+
+print(`My password is ${secrets.password}`);
+
+/*
+	-- this will turn to:
+	local secrets = {
+		token = "0_0",
+		password = "1234",
+	}
+	print("My password is " .. secrets.password)
+	-- should print `My password is 1234`
+*/
 ```
-
-2. Head over to the `tsconfig.json` on your recent project and put the following under compilerOptions:
-
-```json
-"plugins": [
-	{ "transform": "rbxts-transformer-path" }
-]
-```
-
-## Credits
-
-Credits for the code to:
-
-- roblox-ts (for [Rojo project stuff](https://github.com/roblox-ts/roblox-ts/blob/master/src/Shared/classes/RojoResolver.ts) it's kinda complicated to make it one, well I did but it's not working)
-- [@flamework/transformer](https://github.com/rbxts-flamework/transformer)
