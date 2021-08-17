@@ -36,9 +36,9 @@ interface PartitionInfo {
 }
 
 const SUB_EXT_TYPE_MAP = new Map<string, rojo.RbxScriptType>([
-	[rojo.SERVER_SUBEXT, rojo.RbxScriptType.Script],
-	[rojo.CLIENT_SUBEXT, rojo.RbxScriptType.LocalScript],
-	[rojo.MODULE_SUBEXT, rojo.RbxScriptType.ModuleScript],
+	[rojo.SERVER_SUBEXT, RbxScriptType.Script],
+	[rojo.CLIENT_SUBEXT, RbxScriptType.LocalScript],
+	[rojo.MODULE_SUBEXT, RbxScriptType.ModuleScript],
 ]);
 
 /**
@@ -193,7 +193,7 @@ export class Project {
 				throw new TransformerError(
 					`Failed to load config: ${
 						this._configFilePath
-					}! Detected a circular dependency chain: ${chainPaths.join(" ⇒ ")}`,
+					}! Detected a circular dependency chain: ${chainPaths.join(" -> ")}`,
 				);
 			}
 
