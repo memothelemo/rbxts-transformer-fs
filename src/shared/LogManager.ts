@@ -16,7 +16,7 @@ export class LogManager {
 		if (!this.isOnNewLine) {
 			this.write("\n");
 		}
-		this.write(text);
+		this.write(text + "\n");
 	}
 
 	/** Writes something unless it is not in verbose mode */
