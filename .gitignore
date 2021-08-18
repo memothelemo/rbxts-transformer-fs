@@ -2,3 +2,4 @@
 /out
 *.env
 *.tgz
+yarn-error.log

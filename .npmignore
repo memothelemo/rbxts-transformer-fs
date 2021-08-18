@@ -1,5 +1,10 @@
 # Unnecessary files
 src
+*.tgz
+tsconfig.json
+.eslintignore
+.eslintrc.json
 
 # Yarn
 yarn.lock
+yarn-error.log
