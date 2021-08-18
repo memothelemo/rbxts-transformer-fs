@@ -17,13 +17,7 @@ export default function (program: ts.Program) {
 		  - a source file requires making ___getInstanceFromPath function
 		*/
 		const context = catchError(
-			() =>
-				new TransformContext(
-					program.getCurrentDirectory(),
-					program.getCompilerOptions(),
-					program.getTypeChecker(),
-					tsContext,
-				),
+			() => new TransformContext(program.getCompilerOptions(), program.getTypeChecker(), tsContext),
 		);
 		return (file: ts.SourceFile) => {
 			// just in case if someone uses outdated version of roblox-ts (before 1.2.0?)

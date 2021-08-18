@@ -1,6 +1,8 @@
 import ts from "typescript";
 import Rojo from "../rojo";
+import { LogManager } from "../shared/LogManager";
 import { SOURCE_MODULE_TEXT } from "../shared/util/package";
+import { CommandLine, parseCommandLine } from "../shared/util/parseCommandLine";
 
 /**
  * **TransformContext** is a class where it is responsible
@@ -10,11 +12,17 @@ export class TransformContext {
 	/** Each source file requires every function rbxts-transformer-fs provides */
 	private sourceFileRequires = new Map<ts.SourceFile, string[]>();
 
+	/** Parsed command line from arguments configured in CLI */
+	public parsedCommandLine: CommandLine;
+
+	/** Current working project directory of the file */
+	public readonly projectDir: string;
+
 	/** Original source directory */
-	public srcDir: string;
+	public readonly srcDir: string;
 
 	/** Compiled source directory */
-	public outDir: string;
+	public readonly outDir: string;
 
 	/** Rojo project itself */
 	public rojoProject!: Rojo.Project;
@@ -24,9 +32,6 @@ export class TransformContext {
 	public isGame = false;
 
 	public constructor(
-		/** Current working project directory of the file */
-		public readonly projectDir: string,
-
 		/** Compiler options in TypeScript */
 		public readonly tsOptions: ts.CompilerOptions,
 
@@ -36,6 +41,15 @@ export class TransformContext {
 		/** Transformation context */
 		public readonly tsContext: ts.TransformationContext,
 	) {
+		this.parsedCommandLine = parseCommandLine();
+		this.projectDir = this.parsedCommandLine.project;
+
+		LogManager.isVerbose = this.parsedCommandLine.verboseMode;
+
+		// roblox-ts is known for not returning a new line nor console.log
+		// instead if it is in verbose mode, we need to return a new line
+		console.log(process.stdout.read());
+
 		this.srcDir = this.tsOptions.rootDir ?? this.projectDir;
 		this.outDir = this.tsOptions.outDir ?? this.projectDir;
 
