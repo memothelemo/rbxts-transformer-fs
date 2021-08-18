@@ -4,7 +4,7 @@ import { PKG_JSON } from "../util/package";
 
 // just in case whenever i make a transformer based on
 // this package
-const HEADER = `[${ansi.bgBlue(PKG_JSON.name)}]: `;
+const HEADER = `[${ansi.blueBright(PKG_JSON.name)}]: `;
 const HEADER_SPACING = " ".repeat(HEADER.length);
 
 /**

@@ -2,7 +2,6 @@ import ts from "typescript";
 import { TERMINATING_COMPILER_PROCESS_TXT } from "../../../shared/errors/constants";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
 import { print, printIfVerbose } from "../../../shared/functions/print";
-import { LogManager } from "../../../shared/LogManager";
 import { TransformContext } from "../../context";
 import { TransformerError } from "../../error";
 import { transformNode } from "./transformNode";
@@ -49,6 +48,7 @@ export function transformSourceFile(
 		visitNode,
 		context.tsContext,
 	);
+
 	if (context.isSourceFileNeedsUnshift(sourceFile)) {
 		const requiredFunctions = context.getRequiredFunctions(sourceFile);
 		// TODO: make functions

@@ -25,4 +25,7 @@ function error(message: string) {
 export const TransformerSafeErrors = {
 	UNSUPPORTED_CALL_MACRO: (node: ts.CallExpression, functionName: string) =>
 		error(`Unsupported call function: ${functionName}!`)(node),
+
+	UNRESOLVED_ROJO: (node: ts.Node, name: string) =>
+		error(`${name} was used but Rojo cannot be resolved`)(node),
 };

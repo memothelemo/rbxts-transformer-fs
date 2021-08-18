@@ -1,4 +1,5 @@
 /**
- * Macros testing
+ * When transformed, this function will turned to
+ * its filename
  */
-export function rtfsMacros(): void;
+export function $fileName(): string;

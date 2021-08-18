@@ -1,5 +1,6 @@
 import ts from "typescript";
 import Rojo from "../rojo";
+import { PathTranslator } from "../shared/classes/pathTranslator";
 import { printIfVerbose } from "../shared/functions/print";
 import { LogManager } from "../shared/LogManager";
 import { SOURCE_MODULE_TEXT } from "../shared/util/package";
@@ -26,7 +27,10 @@ export class TransformContext {
 	public readonly outDir: string;
 
 	/** Rojo project itself */
-	public rojoProject!: Rojo.Project;
+	public rojoProject?: Rojo.Project;
+
+	/** Made by roblox-ts contributors that allows to predict output paths */
+	public pathTranslator: PathTranslator;
 
 	/** Is this the entire project, a game? */
 	// in case if rojo.Project goes wrong
@@ -56,6 +60,13 @@ export class TransformContext {
 
 		this.srcDir = this.tsOptions.rootDir ?? this.projectDir;
 		this.outDir = this.tsOptions.outDir ?? this.projectDir;
+
+		this.pathTranslator = new PathTranslator(
+			this.srcDir,
+			this.outDir,
+			undefined,
+			false,
+		);
 
 		this.setupRojo();
 	}
