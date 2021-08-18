@@ -23,11 +23,15 @@ function findTsConfigPathFromDir(projectDir: string) {
 export function parseCommandLine(): CommandLine {
 	const options = {} as CommandLine;
 
-	const projectIndex = process.argv.findIndex(x => x === "-p" || x === "--project");
+	const projectIndex = process.argv.findIndex(
+		x => x === "-p" || x === "--project",
+	);
 	const verboseIndex = process.argv.findIndex(x => x == "--verbose");
 
 	if (projectIndex !== -1) {
-		options.tsconfigPath = findTsConfigPathFromDir(process.argv[projectIndex + 1]);
+		options.tsconfigPath = findTsConfigPathFromDir(
+			process.argv[projectIndex + 1],
+		);
 	} else {
 		options.tsconfigPath = findTsConfigPathFromDir(".");
 	}

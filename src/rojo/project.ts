@@ -150,7 +150,12 @@ export class Project {
 	}
 
 	/** Parses rojo tree */
-	private parseTree(basePath: string, name: string, tree: RojoTree, doNotPush = false) {
+	private parseTree(
+		basePath: string,
+		name: string,
+		tree: RojoTree,
+		doNotPush = false,
+	) {
 		if (!doNotPush) {
 			this.rbxPathCache.push(name);
 		}
@@ -159,7 +164,9 @@ export class Project {
 			this.parsePath(path.resolve(basePath, tree.$path));
 		}
 
-		for (const childName of Object.keys(tree).filter(v => !v.startsWith("$"))) {
+		for (const childName of Object.keys(tree).filter(
+			v => !v.startsWith("$"),
+		)) {
 			this.parseTree(basePath, childName, tree[childName], false);
 		}
 
@@ -187,29 +194,43 @@ export class Project {
 				let chainPaths = this.loadingConfigs;
 				chainPaths.push(this._configFilePath);
 				chainPaths = chainPaths.map(v => {
-					return v === this._configFilePath ? "root" : path.relative(this._configFilePath, v);
+					return v === this._configFilePath
+						? "root"
+						: path.relative(this._configFilePath, v);
 				});
 
 				throw new TransformerError(
 					`Failed to load config: ${
 						this._configFilePath
-					}! Detected a circular dependency chain: ${chainPaths.join(" -> ")}`,
+					}! Detected a circular dependency chain: ${chainPaths.join(
+						" -> ",
+					)}`,
 				);
 			}
 
 			// load that file
-			const jsonData = tryOrError(`Invalid JSON file! File: ${realPath}!`, () => fs.readJSONSync(realPath));
+			const jsonData = tryOrError(
+				`Invalid JSON file! File: ${realPath}!`,
+				() => fs.readJSONSync(realPath),
+			);
 
 			// validating rojo config file
 			if (rojo.Utils.isValidRojoConfig(jsonData)) {
 				this.loadingConfigs.push(realPath);
-				this.parseTree(path.dirname(configFilePath), jsonData.name, jsonData.tree, doNotPush);
+				this.parseTree(
+					path.dirname(configFilePath),
+					jsonData.name,
+					jsonData.tree,
+					doNotPush,
+				);
 
 				this.loadingConfigs.pop();
 
 				return jsonData;
 			} else {
-				throw new TransformerError(`Invalid Rojo configuration! File: ${realPath}`);
+				throw new TransformerError(
+					`Invalid Rojo configuration! File: ${realPath}`,
+				);
 			}
 		}
 		throw new TransformerError(`Invalid path: ${realPath}`);
@@ -259,10 +280,16 @@ export class Project {
 		for (const directory of this.loadedDirectories) {
 			if (isPathDescendantOf(filePath, directory.realPath)) {
 				const stripped = rojo.Utils.stripRojoExts(filePath);
-				const relativePath = path.relative(directory.realPath, stripped);
-				const relativeParts = relativePath == "" ? [] : relativePath.split(path.sep);
+				const relativePath = path.relative(
+					directory.realPath,
+					stripped,
+				);
+				const relativeParts =
+					relativePath == "" ? [] : relativePath.split(path.sep);
 
-				if (relativeParts[relativeParts.length - 1] === rojo.INIT_NAME) {
+				if (
+					relativeParts[relativeParts.length - 1] === rojo.INIT_NAME
+				) {
 					relativeParts.pop();
 				}
 

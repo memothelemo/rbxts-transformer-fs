@@ -18,7 +18,9 @@ export function print(...text: string[]) {
 
 	if (text.length > 1) {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		result = text.map((line, i) => (i === 0 ? line : `${HEADER_SPACING}${line}`)).join("\n");
+		result = text
+			.map((line, i) => (i === 0 ? line : `${HEADER_SPACING}${line}`))
+			.join("\n");
 	} else {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		result = text[0] + "\n";

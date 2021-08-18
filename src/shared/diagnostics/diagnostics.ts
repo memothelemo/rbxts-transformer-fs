@@ -1,10 +1,14 @@
 import ts from "typescript";
 import { createDiagnosticWithLocation } from "./createDiagnosticWithLocation";
 
-export type DiagnosticFactory<T = void> = (node: ts.Node, context: T) => ts.DiagnosticWithLocation;
+export type DiagnosticFactory<T = void> = (
+	node: ts.Node,
+	context: T,
+) => ts.DiagnosticWithLocation;
 
 function diagnostic(category: ts.DiagnosticCategory, message: string) {
-	return (node: ts.Node) => createDiagnosticWithLocation(message, category, node);
+	return (node: ts.Node) =>
+		createDiagnosticWithLocation(message, category, node);
 }
 
 function warning(message: string) {

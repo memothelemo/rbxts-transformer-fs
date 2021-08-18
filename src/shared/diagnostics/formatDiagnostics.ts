@@ -13,5 +13,8 @@ function createFormatDiagnosticsHost(): ts.FormatDiagnosticsHost {
  * Formats a given array of typescript diagnostics, `diagnostics`, into a readable format.
  */
 export function formatDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>) {
-	return ts.formatDiagnosticsWithColorAndContext(diagnostics, createFormatDiagnosticsHost());
+	return ts.formatDiagnosticsWithColorAndContext(
+		diagnostics,
+		createFormatDiagnosticsHost(),
+	);
 }

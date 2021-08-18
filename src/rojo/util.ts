@@ -4,7 +4,9 @@ import path from "path";
 import { warn } from "../shared/functions/warn";
 import * as rojo from "./bundle";
 
-const SCHEMA_JSON = fs.readJSONSync(path.join(__dirname, "..", "..", "rojo-schema.json"));
+const SCHEMA_JSON = fs.readJSONSync(
+	path.join(__dirname, "..", "..", "rojo-schema.json"),
+);
 
 const rojoAjv = new Ajv();
 const validateRojoConfig = rojoAjv.compile(SCHEMA_JSON);
@@ -12,7 +14,9 @@ const validateRojoConfig = rojoAjv.compile(SCHEMA_JSON);
 /** Rojo API utils */
 export namespace Utils {
 	/** Checks if it is a valid rojo config */
-	export function isValidRojoConfig(contents: unknown): contents is RojoConfig {
+	export function isValidRojoConfig(
+		contents: unknown,
+	): contents is RojoConfig {
 		return validateRojoConfig(contents) === true;
 	}
 
@@ -22,7 +26,10 @@ export namespace Utils {
 	 * _It only checks rojo config file name up to 5.0.0_
 	 */
 	export function isRojoFileName(fileName: string) {
-		return fileName === rojo.DEFAULT_FILE_NAME || rojo.FILE_REGEX.test(fileName);
+		return (
+			fileName === rojo.DEFAULT_FILE_NAME ||
+			rojo.FILE_REGEX.test(fileName)
+		);
 	}
 
 	/**
@@ -34,14 +41,18 @@ export namespace Utils {
 	export function findRojoConfigFilePath(directory: string) {
 		// lazy thing to do
 		const rojoConfigs = findRojoConfigFilesDir(directory);
-		const defaultIndex = rojoConfigs.findIndex(v => v === rojo.DEFAULT_FILE_NAME);
+		const defaultIndex = rojoConfigs.findIndex(
+			v => v === rojo.DEFAULT_FILE_NAME,
+		);
 
 		if (defaultIndex !== -1) {
 			return rojoConfigs[defaultIndex];
 		}
 
 		if (rojoConfigs.length > 1) {
-			warn(`Multiple *.project.json files found, using ${rojoConfigs[0]}`);
+			warn(
+				`Multiple *.project.json files found, using ${rojoConfigs[0]}`,
+			);
 		}
 
 		// get the first candidate rojo file
@@ -72,7 +83,10 @@ export namespace Utils {
 		if (ext === rojo.LUA_EXT) {
 			filePath = filePath.slice(0, -ext.length);
 			const subext = path.extname(filePath);
-			if (subext === rojo.SERVER_SUBEXT || subext === rojo.CLIENT_SUBEXT) {
+			if (
+				subext === rojo.SERVER_SUBEXT ||
+				subext === rojo.CLIENT_SUBEXT
+			) {
 				filePath = filePath.slice(0, -subext.length);
 			}
 		} else if (ext === rojo.JSON_EXT) {

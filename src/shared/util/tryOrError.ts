@@ -13,7 +13,9 @@ export function tryOrError<T>(message: string, callback: () => T): T {
 		if (LogManager.isVerbose) {
 			if (e instanceof Error) {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				finalMsg += `\n${e.message}\n${e.stack ?? "No stack available"}`;
+				finalMsg += `\n${e.message}\n${
+					e.stack ?? "No stack available"
+				}`;
 			}
 		}
 		throw new TransformerError(finalMsg);

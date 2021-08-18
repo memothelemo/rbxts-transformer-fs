@@ -5,7 +5,10 @@ import { TransformContext } from "../../context";
 import { isSignatureFromTransformer } from "../../helpers/isSignatureFromTransformer";
 import { CALL_MACROS } from "../macros/call";
 
-export function transformCallExpression(context: TransformContext, node: ts.CallExpression) {
+export function transformCallExpression(
+	context: TransformContext,
+	node: ts.CallExpression,
+) {
 	const signature = context.typeChecker.getResolvedSignature(node);
 	if (!signature) {
 		return node;
@@ -28,7 +31,9 @@ export function transformCallExpression(context: TransformContext, node: ts.Call
 	// call macros begins
 	const macro = CALL_MACROS[functionName];
 	if (!macro) {
-		throw new DiagnosticError(TransformerSafeErrors.UNSUPPORTED_CALL_MACRO(node, functionName));
+		throw new DiagnosticError(
+			TransformerSafeErrors.UNSUPPORTED_CALL_MACRO(node, functionName),
+		);
 	}
 
 	return macro(context, node);

@@ -11,12 +11,16 @@ function isModuleImport(context: TransformContext, node: ts.ImportDeclaration) {
 		return false;
 	}
 
-	const importSymbol = context.typeChecker.getSymbolAtLocation(node.moduleSpecifier);
+	const importSymbol = context.typeChecker.getSymbolAtLocation(
+		node.moduleSpecifier,
+	);
 
 	if (
 		!importSymbol ||
 		!importSymbol.valueDeclaration ||
-		!context.isTransformerModule(importSymbol.valueDeclaration.getSourceFile())
+		!context.isTransformerModule(
+			importSymbol.valueDeclaration.getSourceFile(),
+		)
 	) {
 		return false;
 	}
@@ -24,7 +28,10 @@ function isModuleImport(context: TransformContext, node: ts.ImportDeclaration) {
 	return true;
 }
 
-export function transformImportDeclaration(context: TransformContext, node: ts.ImportDeclaration) {
+export function transformImportDeclaration(
+	context: TransformContext,
+	node: ts.ImportDeclaration,
+) {
 	if (isModuleImport(context, node)) {
 		const { importClause } = node;
 		if (importClause !== undefined && importClause.isTypeOnly) {
@@ -36,7 +43,12 @@ export function transformImportDeclaration(context: TransformContext, node: ts.I
 				node,
 				undefined,
 				undefined,
-				factory.updateImportClause(importClause, true, importClause.name, importClause.namedBindings),
+				factory.updateImportClause(
+					importClause,
+					true,
+					importClause.name,
+					importClause.namedBindings,
+				),
 				node.moduleSpecifier,
 			);
 		}
