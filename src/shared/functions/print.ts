@@ -9,7 +9,7 @@ const HEADER_SPACING = " ".repeat(HEADER.length);
 
 /**
  * Allows to print something with additional header to avoid
- * people confused when compiling their project to Luau
+ * getting people confused when compiling their project to Luau
  *
  * _An alternative to console.log_
  */
