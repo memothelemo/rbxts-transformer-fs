@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { TransformerSafeErrors } from "../../../shared/diagnostics/diagnostics";
+import { TransformerDiagnostics } from "../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
 import { printIfVerbose } from "../../../shared/functions/print";
 import { TransformContext } from "../../context";
@@ -33,7 +33,7 @@ export function transformCallExpression(
 	const macro = CALL_MACROS[functionName];
 	if (!macro) {
 		throw new DiagnosticError(
-			TransformerSafeErrors.UNSUPPORTED_CALL_MACRO(node, functionName),
+			TransformerDiagnostics.UNSUPPORTED_CALL_MACRO(node, functionName),
 		);
 	}
 

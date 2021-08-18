@@ -1,0 +1,13 @@
+import ts from "typescript";
+
+import { TransformContext } from "../../../context";
+import { transformFileNameCallMacro } from "./fileName";
+
+export type CallMacroFunction = (
+	context: TransformContext,
+	node: ts.CallExpression,
+) => ts.Node | ts.Node[];
+
+export const CALL_MACROS: { [index: string]: CallMacroFunction } = {
+	$fileName: transformFileNameCallMacro,
+};

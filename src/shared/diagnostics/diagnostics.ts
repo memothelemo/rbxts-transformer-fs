@@ -20,12 +20,19 @@ function error(message: string) {
 }
 
 /**
- * All of the **SAFE** errors from rbxts-transformer-fs
+ * These are TypeScript diagnostics stuff from rbxts-transformer-fs
  */
-export const TransformerSafeErrors = {
+export const TransformerDiagnostics = {
 	UNSUPPORTED_CALL_MACRO: (node: ts.CallExpression, functionName: string) =>
 		error(`Unsupported call function: ${functionName}!`)(node),
 
-	UNRESOLVED_ROJO: (node: ts.Node, name: string) =>
+	USED_BUT_UNRESOLVED_ROJO: (node: ts.Node, name: string) =>
 		error(`${name} was used but Rojo cannot be resolved`)(node),
+
+	UNRESOLVED_ROJO: error(`Rojo cannot be resolved`),
+
+	SOURCE_FILE_NOT_IN_ROJO_CONFIG: (node: ts.SourceFile) =>
+		error(
+			`${node.fileName} is not registered in the Rojo configuration, please register it!`,
+		)(node),
 };

@@ -1,6 +1,5 @@
 import ts, { factory } from "typescript";
-import { print, printIfVerbose } from "../../../shared/functions/print";
-import { LogManager } from "../../../shared/LogManager";
+import { printIfVerbose } from "../../../shared/functions/print";
 import { TransformContext } from "../../context";
 
 function isModuleImport(context: TransformContext, node: ts.ImportDeclaration) {

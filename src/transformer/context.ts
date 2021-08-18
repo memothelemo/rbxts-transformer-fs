@@ -5,6 +5,7 @@ import { printIfVerbose } from "../shared/functions/print";
 import { LogManager } from "../shared/LogManager";
 import { SOURCE_MODULE_TEXT } from "../shared/util/package";
 import { CommandLine, parseCommandLine } from "../shared/util/parseCommandLine";
+import { REQUIRED_FUNCTIONS } from "./helpers/requiredFunctions";
 
 /**
  * **TransformContext** is a class where it is responsible
@@ -79,6 +80,19 @@ export class TransformContext {
 	/** Gets the required functions of the source file */
 	public getRequiredFunctions(sourceFile: ts.SourceFile) {
 		return this.sourceFileRequires.get(sourceFile);
+	}
+
+	/** Register a required function */
+	public addRequiredFunction(
+		sourceFile: ts.SourceFile,
+		name: keyof typeof REQUIRED_FUNCTIONS,
+	) {
+		const array = this.sourceFileRequires.get(sourceFile);
+		if (!array) {
+			this.sourceFileRequires.set(sourceFile, new Array<string>(name));
+		} else {
+			array.push(name);
+		}
 	}
 
 	/** Checks if the source file requires making functions */
