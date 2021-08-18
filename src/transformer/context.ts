@@ -1,11 +1,15 @@
 import ts from "typescript";
 import Rojo from "../rojo";
+import { SOURCE_MODULE_TEXT } from "../shared/util/package";
 
 /**
  * **TransformContext** is a class where it is responsible
  * and gives context to this transformer.
  */
 export class TransformContext {
+	/** Each source file requires every function rbxts-transformer-fs provides */
+	private sourceFileRequires = new Map<ts.SourceFile, string[]>();
+
 	/** Original source directory */
 	public srcDir: string;
 
@@ -30,12 +34,27 @@ export class TransformContext {
 		public readonly typeChecker: ts.TypeChecker,
 
 		/** Transformation context */
-		public readonly context: ts.TransformationContext,
+		public readonly tsContext: ts.TransformationContext,
 	) {
 		this.srcDir = this.tsOptions.rootDir ?? this.projectDir;
 		this.outDir = this.tsOptions.outDir ?? this.projectDir;
 
 		this.setupRojo();
+	}
+
+	/** Gets the required functions of the source file */
+	public getRequiredFunctions(sourceFile: ts.SourceFile) {
+		return this.sourceFileRequires.get(sourceFile);
+	}
+
+	/** Checks if the source file requires making functions */
+	public isSourceFileNeedsUnshift(sourceFile: ts.SourceFile) {
+		return this.sourceFileRequires.has(sourceFile);
+	}
+
+	/** A conditional function checks if the source file is from the transformer */
+	public isTransformerModule(sourceFile: ts.SourceFile) {
+		return sourceFile.text === SOURCE_MODULE_TEXT;
 	}
 
 	/** Setups rojo project */
@@ -47,7 +66,7 @@ export class TransformContext {
 	}
 
 	/** Gets the source file of the node */
-	public getSourceFile(node: ts.SourceFile) {
+	public getSourceFile(node: ts.Node) {
 		return ts.getSourceFileOfNode(node);
 	}
 
