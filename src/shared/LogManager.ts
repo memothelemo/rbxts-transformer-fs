@@ -7,6 +7,7 @@ export class LogManager {
 
 	/** Writes something but never ends with a new line */
 	static write(text: string) {
+		this.isOnNewLine = text.endsWith("\n");
 		process.stdout.write(text);
 	}
 

@@ -1,4 +1,5 @@
 import ts from "typescript";
+import { TERMINATING_COMPILER_PROCESS_TXT } from "../../../shared/errors/constants";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
 import { print } from "../../../shared/functions/print";
 import { TransformContext } from "../../context";
@@ -11,7 +12,7 @@ function transformNodeOr<T>(context: TransformContext, originalNode: ts.Node, ca
 	} catch (e) {
 		if (e instanceof TransformerError) {
 			e.print();
-			print("Terminating compiler program because of this error");
+			print(TERMINATING_COMPILER_PROCESS_TXT);
 			process.exit(1);
 		} else if (e instanceof DiagnosticError) {
 			context.addDiagnostic(e.diagnostic);
