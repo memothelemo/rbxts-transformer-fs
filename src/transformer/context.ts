@@ -51,7 +51,6 @@ export class TransformContext {
 		// instead if it is in verbose mode, we need to return a new line
 		if (this.parsedCommandLine.verboseMode) {
 			LogManager.write("\n");
-			printIfVerbose("Verbose mode activated, showing verbose logs");
 			printIfVerbose("Loading Rojo project");
 		}
 
