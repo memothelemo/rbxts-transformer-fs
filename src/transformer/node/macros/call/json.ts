@@ -4,6 +4,7 @@ import ts, { factory } from "typescript";
 import { CallMacroFunction } from ".";
 import { TransformerDiagnostics } from "../../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../../shared/errors/diagnostic";
+import { printIfVerbose } from "../../../../shared/functions/print";
 import { parseFileGetterCallExpression } from "../../../helpers/parseFileGetterCallExpression";
 
 function parseBoolean(bool: boolean) {
@@ -54,6 +55,8 @@ function visitJsonTree(sourceNode: ts.Node, tree: object) {
 }
 
 export const transformJsonCallMacro: CallMacroFunction = (context, node) => {
+	printIfVerbose("Transforming $json to ObjectLiteralExpression");
+
 	// get the file path
 	const filePath = parseFileGetterCallExpression(context, node, false);
 
@@ -62,6 +65,8 @@ export const transformJsonCallMacro: CallMacroFunction = (context, node) => {
 			TransformerDiagnostics.UNEXPECTED_ERROR(node),
 		);
 	}
+
+	printIfVerbose("Reading JSON file");
 
 	// load json file
 	let data: object;
@@ -73,6 +78,8 @@ export const transformJsonCallMacro: CallMacroFunction = (context, node) => {
 			TransformerDiagnostics.JSON_MACRO.INVALID_JSON(filePath)(node),
 		);
 	}
+
+	printIfVerbose("Parsing JSON contents to ObjectLiteralExpression");
 
 	return visitJsonTree(node, data);
 };

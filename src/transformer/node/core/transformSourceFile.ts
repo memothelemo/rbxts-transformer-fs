@@ -52,19 +52,20 @@ export function transformSourceFile(
 
 	// provide them with required functions
 	if (context.isSourceFileNeedsUnshift(sourceFile)) {
-		printIfVerbose(`Providing required functions`);
+		printIfVerbose(`Generating required functions`);
 
-		const providedStatements = new Array<ts.Statement>();
+		const generatedStatements = new Array<ts.Statement>();
 		const requiredFunctions = context.getRequiredFunctions(sourceFile)!;
 		for (const functionName of requiredFunctions) {
 			const maker = REQUIRED_FUNCTIONS[functionName];
 			if (maker !== undefined) {
-				providedStatements.push(...maker(context, sourceFile));
+				printIfVerbose(`Generating ${functionName}`);
+				generatedStatements.push(...maker(context, sourceFile));
 			}
 		}
 
 		return context.tsContext.factory.updateSourceFile(transformed, [
-			...providedStatements,
+			...generatedStatements,
 			...transformed.statements,
 		]);
 	}

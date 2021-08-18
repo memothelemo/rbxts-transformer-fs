@@ -1,6 +1,6 @@
 {
 	"name": "rbxts-transformer-path",
-	"version": "1.3.0-dev.35",
+	"version": "1.3.0-dev.36",
 	"main": "out/index.js",
 	"license": "MIT",
 	"author": "memothelemo",

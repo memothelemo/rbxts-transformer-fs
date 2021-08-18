@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import { CallMacroFunction } from ".";
 import { TransformerDiagnostics } from "../../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../../shared/errors/diagnostic";
+import { printIfVerbose } from "../../../../shared/functions/print";
 import { parseFileGetterCallExpression } from "../../../helpers/parseFileGetterCallExpression";
 
 export const transformFileContentsCallMacro: CallMacroFunction = (
@@ -16,6 +17,8 @@ export const transformFileContentsCallMacro: CallMacroFunction = (
 			TransformerDiagnostics.UNEXPECTED_ERROR(node),
 		);
 	}
+
+	printIfVerbose("Reading file contents");
 
 	// load that file
 	const fileContents = fs.readFileSync(filePath).toString();

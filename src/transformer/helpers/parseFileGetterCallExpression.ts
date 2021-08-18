@@ -3,6 +3,7 @@ import path from "path";
 import ts from "typescript";
 import { TransformerDiagnostics } from "../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../shared/errors/diagnostic";
+import { printIfVerbose } from "../../shared/functions/print";
 import { PKG_JSON } from "../../shared/util/package";
 import { TransformContext } from "../context";
 import { TransformerError } from "../error";
@@ -38,6 +39,8 @@ export function parseFileGetterCallExpression(
 	fromRojo = true,
 	requireOutput = false,
 ) {
+	printIfVerbose(`Parsing file getter call expression`);
+
 	// extract string from any node (if possible)
 	const pathArg = node.arguments[0];
 

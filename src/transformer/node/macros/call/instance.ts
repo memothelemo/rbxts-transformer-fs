@@ -20,19 +20,11 @@ function transformInstanceCallMacroInner(
 	waitFor: boolean,
 ) {
 	const sourceFile = context.getSourceFile(node);
+
 	context.addRequiredFunction(
 		sourceFile,
 		REQUIRED_FUNCTIONS_BY_NAME.getInstanceFromPath,
 	);
-
-	if (!context.rojoProject) {
-		throw new DiagnosticError(
-			TransformerDiagnostics.USED_BUT_UNRESOLVED_ROJO(
-				node,
-				waitFor ? "$instance" : "$instanceWaitFor",
-			),
-		);
-	}
 
 	const rbxPath = parseFileGetterCallExpression(context, node, true, true);
 	if (typeof rbxPath === "string") {

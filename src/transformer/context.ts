@@ -95,9 +95,13 @@ export class TransformContext {
 	) {
 		const array = this.sourceFileRequires.get(sourceFile);
 		if (!array) {
+			printIfVerbose(`Requesting required function: ${name}`);
 			this.sourceFileRequires.set(sourceFile, new Array<string>(name));
 		} else {
-			array.push(name);
+			if (!array.includes(name)) {
+				printIfVerbose(`Requesting required function: ${name}`);
+				array.push(name);
+			}
 		}
 	}
 
