@@ -9,6 +9,7 @@
     "skipLibCheck": true
   },
   "exclude": [
-	"index.d.ts"
+	"index.d.ts",
+	"*.md",
   ]
 }
