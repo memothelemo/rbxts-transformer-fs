@@ -41,12 +41,7 @@ function transformGetFileCallMacroInner(
 		);
 	}
 
-	let typeArgument: ts.TypeNode | undefined;
-	if (node.typeArguments) {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		typeArgument = node.typeArguments[0];
-	}
-
+	const typeArgument = node.typeArguments?.[0];
 	const args = new Array<ts.Expression>(
 		factory.createArrayLiteralExpression(
 			rbxPath.map(v => factory.createStringLiteral(v as string)),

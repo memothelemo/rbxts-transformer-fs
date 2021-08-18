@@ -40,8 +40,6 @@ export const TransformerDiagnostics = {
 
 	COULD_NOT_FIND_ROJO_DATA: error(`Could not find rojo data`),
 
-	UNRESOLVED_ROJO: error(`Rojo cannot be resolved`),
-
 	UNEXPECTED_ERROR: error(`Unexpected error`),
 
 	UNKNOWN_TYPE: error(`Unknown type!`),

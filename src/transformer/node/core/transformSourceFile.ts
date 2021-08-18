@@ -50,18 +50,23 @@ export function transformSourceFile(
 		context.tsContext,
 	);
 
+	// provide them with required functions
 	if (context.isSourceFileNeedsUnshift(sourceFile)) {
-		const requiredFunctions = context.getRequiredFunctions(sourceFile)!;
-		for (const [name, maker] of Object.entries(REQUIRED_FUNCTIONS)) {
-			if (requiredFunctions.includes(name)) {
-				const statement = maker(context, sourceFile);
+		printIfVerbose(`Providing required functions`);
 
-				// idk if it works lmao
-				(
-					sourceFile.statements as unknown as Array<ts.Statement>
-				).unshift(statement);
+		const providedStatements = new Array<ts.Statement>();
+		const requiredFunctions = context.getRequiredFunctions(sourceFile)!;
+		for (const functionName of requiredFunctions) {
+			const maker = REQUIRED_FUNCTIONS[functionName];
+			if (maker !== undefined) {
+				providedStatements.push(...maker(context, sourceFile));
 			}
 		}
+
+		return context.tsContext.factory.updateSourceFile(transformed, [
+			...providedStatements,
+			...transformed.statements,
+		]);
 	}
 
 	return transformed;

@@ -13,13 +13,6 @@ export function getProjectRoot(context: TransformContext, node: ts.Node) {
 		? node
 		: context.getSourceFile(node);
 
-	// warn users if rojo wasn't resolved
-	if (!context.rojoProject) {
-		throw new DiagnosticError(
-			TransformerDiagnostics.UNRESOLVED_ROJO(sourceFile),
-		);
-	}
-
 	if (context.isGame === true) {
 		root = factory.createIdentifier("game");
 		stringedRoot = "game";

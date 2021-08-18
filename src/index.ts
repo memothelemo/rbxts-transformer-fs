@@ -33,6 +33,9 @@ export default function (program: ts.Program) {
 
 				process.exit(1);
 			}
+			if (context.hasErrors) {
+				return file;
+			}
 			return transformSourceFile(context, file);
 		};
 	};

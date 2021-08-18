@@ -18,7 +18,7 @@ function getPathFromSpecifier(
 	const sourceDir = path.dirname(sourceFile.fileName);
 	const absolutePath = specifier.startsWith(".")
 		? path.join(sourceDir, specifier)
-		: path.join(context.srcDir, specifier);
+		: path.join(context.projectDir, specifier);
 
 	let finalPath = absolutePath;
 	if (requireOutput) {
@@ -41,7 +41,7 @@ export function parseFileGetterCallExpression(
 	// extract string from any node (if possible)
 	const pathArg = node.arguments[0];
 
-	if (!ts.isStringLiteralLike(pathArg) || !ts.isIdentifier(pathArg)) {
+	if (!ts.isStringLiteralLike(pathArg) && !ts.isIdentifier(pathArg)) {
 		throw new DiagnosticError(
 			TransformerDiagnostics.GET_FILE_MACRO.NOT_STRING(node),
 		);
@@ -74,7 +74,7 @@ export function parseFileGetterCallExpression(
 				`Please make an issue in Github: ${PKG_JSON.bugs.url}\n[INFO]:\nArgument: ${pathArgText}\nResult: ${path}\nFrom rojo: ${fromRojo}\nRequires output: ${requireOutput}`,
 			);
 		}
-		if (!fs.existsSync(path as string)) {
+		if (typeof path === "string" && !fs.existsSync(path as string)) {
 			throw new DiagnosticError(
 				TransformerDiagnostics.INVALID_PATH(node),
 			);

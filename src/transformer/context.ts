@@ -28,7 +28,10 @@ export class TransformContext {
 	public readonly outDir: string;
 
 	/** Rojo project itself */
-	public rojoProject?: Rojo.Project;
+	public rojoProject!: Rojo.Project;
+
+	/** If this project has errors */
+	public hasErrors = false;
 
 	/** Made by roblox-ts contributors that allows to predict output paths */
 	public pathTranslator: PathTranslator;
@@ -74,6 +77,9 @@ export class TransformContext {
 
 	/** Adds TypeScript diagnostics */
 	public addDiagnostic(diagnostic: ts.DiagnosticWithLocation) {
+		if (diagnostic.category === ts.DiagnosticCategory.Error) {
+			this.hasErrors = true;
+		}
 		this.tsContext.addDiagnostic(diagnostic);
 	}
 
@@ -110,6 +116,7 @@ export class TransformContext {
 		const rojoConfig = Rojo.Utils.findRojoConfigFilePath(this.projectDir);
 		if (rojoConfig) {
 			this.rojoProject = Rojo.Project.fromPath(rojoConfig);
+			this.isGame = this.rojoProject.isGame;
 		}
 	}
 

@@ -16,6 +16,6 @@ export const REQUIRED_FUNCTIONS = {
 		const [root, stringRoot] = getProjectRoot(context, sourceFile);
 
 		// to make it cleaner
-		return makeGetInstanceFromPath(root, stringRoot) as ts.Statement;
+		return makeGetInstanceFromPath(root, stringRoot) as ts.Statement[];
 	},
 } as const;
