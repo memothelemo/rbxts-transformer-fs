@@ -1,7 +1,7 @@
 /// <reference types="@rbxts/types" />
 
 /**
- * Gets the JSON file from filesystem path
+ * It replaces from JSON file to object or table
  * @param path JSON path
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -34,7 +34,7 @@ export function $fileContents(path: string): string;
  * It replaces to the location of the source file (filesystem)
  *
  * **From**:
- * `print($fileName + " goodbye!")`
+ * `print($fileName() + " goodbye!")`
  *
  * **To**:
  * `print("src/example.ts" + " goodbye!")`

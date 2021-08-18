@@ -1,5 +1,7 @@
-# Unnecessary files
+# Unnecessary directories
 src
+
+# Unnecessary files
 *.tgz
 tsconfig.json
 .eslintignore

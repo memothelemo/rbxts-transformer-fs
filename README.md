@@ -1,12 +1,10 @@
 # rbxts-transformer-fs
 
+## Info
+
 **rbxts-transformer-fs** is a transformer designed for roblox-ts.
 
-It allows to use or mainpulate project filesystem and do the transformer its thing.
-
-## Warning
-
-_If you installed rbxts-transformer-path, please replace it with rbxts-transformer-ts and good to go!_
+It allows to convert from any file system related functions to an expected functionality offered with this transformer.
 
 ## Usage
 

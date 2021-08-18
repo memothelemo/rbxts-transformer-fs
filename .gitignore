@@ -1,5 +1,9 @@
+# Unnecessary directories
 /node_modules
 /out
-*.env
+
+# Unnecessary files
 *.tgz
+
+# Yarn related stuff
 yarn-error.log
