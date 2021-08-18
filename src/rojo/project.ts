@@ -92,7 +92,9 @@ export class Project {
 	private visitDirectory(directory: string, item?: string) {
 		const isRealPath = isRealDir(directory);
 		if (!isRealPath) {
-			throw new TransformerError(`Invalid directory: ${directory}`);
+			throw new TransformerError(
+				`From Rojo: invalid directory: ${directory}`,
+			);
 		}
 
 		const children = fs.readdirSync(directory);
@@ -142,10 +144,12 @@ export class Project {
 			} else if (stat.isDirectory()) {
 				this.visitDirectory(filePath);
 			} else if (!stat) {
-				throw new TransformerError(`Unknown path stats: ${isRealPath}`);
+				throw new TransformerError(
+					`From Rojo: unknown path stats: ${isRealPath}`,
+				);
 			}
 		} else {
-			throw new TransformerError(`Invalid path: ${filePath}`);
+			throw new TransformerError(`From Rojo: invalid path: ${filePath}`);
 		}
 	}
 
@@ -200,7 +204,7 @@ export class Project {
 				});
 
 				throw new TransformerError(
-					`Failed to load config: ${
+					`From Rojo, failed to load config: ${
 						this._configFilePath
 					}! Detected a circular dependency chain: ${chainPaths.join(
 						" -> ",
@@ -229,11 +233,11 @@ export class Project {
 				return jsonData;
 			} else {
 				throw new TransformerError(
-					`Invalid Rojo configuration! File: ${realPath}`,
+					`From Rojo, invalid Rojo configuration! File: ${realPath}`,
 				);
 			}
 		}
-		throw new TransformerError(`Invalid path: ${realPath}`);
+		throw new TransformerError(`From Rojo, invalid path: ${realPath}`);
 	}
 
 	// GETTERS //

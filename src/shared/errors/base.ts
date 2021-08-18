@@ -4,7 +4,7 @@ import { PKG_JSON } from "../util/package";
 
 // just in case whenever i make a transformer based on
 // this package
-const ERROR_HEADER = `[${ansi.redBright(PKG_JSON.name)} error]: `;
+const ERROR_HEADER = `[${PKG_JSON.name} ${ansi.redBright("error")}]: `;
 
 /** Base class of custom transformer error */
 export abstract class BaseError {
