@@ -1,6 +1,6 @@
 # rbxts-transformer-fs
 
-**rbxts-transformer-ts** is a transformer designed for roblox-ts.
+**rbxts-transformer-fs** is a transformer designed for roblox-ts.
 
 It allows to use or mainpulate project filesystem and do the transformer its thing.
 
@@ -28,6 +28,6 @@ print(`My password is ${secrets.password}`);
 		password = "1234",
 	}
 	print("My password is " .. secrets.password)
-	-- should print `My password is 1234`
+	-- should print: My password is 1234
 */
 ```

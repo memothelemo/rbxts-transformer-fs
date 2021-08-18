@@ -1,6 +1,7 @@
 import ts from "typescript";
+import { TransformerSafeErrors } from "../../../shared/diagnostics/diagnostics";
+import { DiagnosticError } from "../../../shared/errors/diagnostic";
 import { TransformContext } from "../../context";
-import { TransformerError } from "../../error";
 import { isSignatureFromTransformer } from "../../helpers/isSignatureFromTransformer";
 import { CALL_MACROS } from "../macros/call";
 
@@ -27,7 +28,7 @@ export function transformCallExpression(context: TransformContext, node: ts.Call
 	// call macros begins
 	const macro = CALL_MACROS[functionName];
 	if (!macro) {
-		throw new TransformerError(`Unsupported call function: '${functionName}!'`);
+		throw new DiagnosticError(TransformerSafeErrors.UNSUPPORTED_CALL_MACRO(node, functionName));
 	}
 
 	return macro(context, node);

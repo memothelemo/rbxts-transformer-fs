@@ -42,6 +42,11 @@ export class TransformContext {
 		this.setupRojo();
 	}
 
+	/** Adds TypeScript diagnostics */
+	public addDiagnostic(diagnostic: ts.DiagnosticWithLocation) {
+		this.tsContext.addDiagnostic(diagnostic);
+	}
+
 	/** Gets the required functions of the source file */
 	public getRequiredFunctions(sourceFile: ts.SourceFile) {
 		return this.sourceFileRequires.get(sourceFile);
