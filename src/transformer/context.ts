@@ -5,7 +5,7 @@ import { printIfVerbose } from "../shared/functions/print";
 import { LogManager } from "../shared/LogManager";
 import { SOURCE_MODULE_TEXT } from "../shared/util/package";
 import { CommandLine, parseCommandLine } from "../shared/util/parseCommandLine";
-import { REQUIRED_FUNCTIONS } from "./helpers/requiredFunctions";
+import { REQUIRED_FUNCTIONS_BY_NAME } from "./helpers/requiredFunctions";
 
 /**
  * **TransformContext** is a class where it is responsible
@@ -85,7 +85,7 @@ export class TransformContext {
 	/** Register a required function */
 	public addRequiredFunction(
 		sourceFile: ts.SourceFile,
-		name: keyof typeof REQUIRED_FUNCTIONS,
+		name: typeof REQUIRED_FUNCTIONS_BY_NAME[keyof typeof REQUIRED_FUNCTIONS_BY_NAME],
 	) {
 		const array = this.sourceFileRequires.get(sourceFile);
 		if (!array) {
@@ -120,7 +120,11 @@ export class TransformContext {
 
 	/** Gets the symbol node from node argument (if possible) */
 	public getSymbol(node: ts.Node): ts.Symbol | undefined {
-		const symbol = this.typeChecker.getSymbolAtLocation(node);
-		return symbol;
+		return this.typeChecker.getSymbolAtLocation(node);
+	}
+
+	/** Gets the type node from node argument (if possible) */
+	public getType(node: ts.Node) {
+		return this.typeChecker.getTypeAtLocation(node);
 	}
 }

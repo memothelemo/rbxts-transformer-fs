@@ -4,6 +4,7 @@ import { DiagnosticError } from "../../../shared/errors/diagnostic";
 import { print, printIfVerbose } from "../../../shared/functions/print";
 import { TransformContext } from "../../context";
 import { TransformerError } from "../../error";
+import { REQUIRED_FUNCTIONS } from "../../helpers/requiredFunctions";
 import { transformNode } from "./transformNode";
 
 function transformNodeOr<T>(
@@ -50,8 +51,17 @@ export function transformSourceFile(
 	);
 
 	if (context.isSourceFileNeedsUnshift(sourceFile)) {
-		const requiredFunctions = context.getRequiredFunctions(sourceFile);
-		// TODO: make functions
+		const requiredFunctions = context.getRequiredFunctions(sourceFile)!;
+		for (const [name, maker] of Object.entries(REQUIRED_FUNCTIONS)) {
+			if (requiredFunctions.includes(name)) {
+				const statement = maker(context, sourceFile);
+
+				// idk if it works lmao
+				(
+					sourceFile.statements as unknown as Array<ts.Statement>
+				).unshift(statement);
+			}
+		}
 	}
 
 	return transformed;

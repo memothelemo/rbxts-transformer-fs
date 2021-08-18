@@ -4,14 +4,18 @@ import { TransformContext } from "../context";
 import { getProjectRoot } from "./getProjectRoot";
 import { makeGetInstanceFromPath } from "./makeGetInstanceFromPath";
 
+export const REQUIRED_FUNCTIONS_BY_NAME = {
+	getInstanceFromPath: "___getInstanceFromPath",
+};
+
 export const REQUIRED_FUNCTIONS = {
-	___getInstanceFromPath: (
+	[REQUIRED_FUNCTIONS_BY_NAME.getInstanceFromPath]: (
 		context: TransformContext,
 		sourceFile: ts.SourceFile,
 	) => {
 		const [root, stringRoot] = getProjectRoot(context, sourceFile);
 
 		// to make it cleaner
-		return makeGetInstanceFromPath(root, stringRoot);
+		return makeGetInstanceFromPath(root, stringRoot) as ts.Statement;
 	},
 } as const;
