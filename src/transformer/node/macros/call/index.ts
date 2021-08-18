@@ -1,11 +1,11 @@
 import ts from "typescript";
-
 import { TransformContext } from "../../../context";
-import { transformFileNameCallMacro } from "./fileName";
 import {
-	transformGetFileCallMacro,
-	transformGetFileWaitForCallMacro,
-} from "./getFile";
+	transformInstanceCallMacro,
+	transformInstanceWaitForCallMacro,
+} from "./instance";
+import { transformFileContentsCallMacro } from "./fileContents";
+import { transformJsonCallMacro } from "./json";
 
 export type CallMacroFunction = (
 	context: TransformContext,
@@ -13,7 +13,8 @@ export type CallMacroFunction = (
 ) => ts.Node | ts.Node[];
 
 export const CALL_MACROS: { [index: string]: CallMacroFunction } = {
-	$fileName: transformFileNameCallMacro,
-	$getFile: transformGetFileCallMacro,
-	$getFileWaitFor: transformGetFileWaitForCallMacro,
+	$instance: transformInstanceCallMacro,
+	$instanceWaitFor: transformInstanceWaitForCallMacro,
+	$fileContents: transformFileContentsCallMacro,
+	$json: transformJsonCallMacro,
 };

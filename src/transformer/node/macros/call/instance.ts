@@ -10,11 +10,11 @@ import { REQUIRED_FUNCTIONS_BY_NAME } from "../../../helpers/requiredFunctions";
 // so we need to seperate those out
 
 /**
- * Modular function that allows to transform $getFile
+ * Modular function that allows to transform $rbxInstance
  * universally
  * @param waitFor Implement waitFor
  */
-function transformGetFileCallMacroInner(
+function transformInstanceCallMacroInner(
 	context: TransformContext,
 	node: ts.CallExpression,
 	waitFor: boolean,
@@ -29,7 +29,7 @@ function transformGetFileCallMacroInner(
 		throw new DiagnosticError(
 			TransformerDiagnostics.USED_BUT_UNRESOLVED_ROJO(
 				node,
-				waitFor ? "$getFileWaitFor" : "$getFile",
+				waitFor ? "$instance" : "$instanceWaitFor",
 			),
 		);
 	}
@@ -66,10 +66,10 @@ function transformGetFileCallMacroInner(
 	);
 }
 
-export const transformGetFileCallMacro: CallMacroFunction = (context, node) =>
-	transformGetFileCallMacroInner(context, node, false);
+export const transformInstanceCallMacro: CallMacroFunction = (context, node) =>
+	transformInstanceCallMacroInner(context, node, false);
 
-export const transformGetFileWaitForCallMacro: CallMacroFunction = (
+export const transformInstanceWaitForCallMacro: CallMacroFunction = (
 	context,
 	node,
-) => transformGetFileCallMacroInner(context, node, true);
+) => transformInstanceCallMacroInner(context, node, true);

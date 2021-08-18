@@ -24,26 +24,35 @@ function error(message: string) {
  * These are TypeScript diagnostics stuff from rbxts-transformer-fs
  */
 export const TransformerDiagnostics = {
-	UNSUPPORTED_CALL_MACRO: (node: ts.CallExpression, functionName: string) =>
-		error(`Unsupported call function: ${functionName}!`)(node),
+	JSON_MACRO: {
+		INVALID_JSON: (path: string) =>
+			error(`${path} is an invalid JSON file, please check it again`),
 
-	USED_BUT_UNRESOLVED_ROJO: (node: ts.Node, name: string) =>
-		error(`${name} was used but Rojo cannot be resolved`)(node),
+		UNSUPPORTED_JSON_TYPE: (type: string) =>
+			error(`Unsupported type: ${type}`),
+	},
 
 	GET_FILE_MACRO: {
 		NOT_STRING: error(
 			`Path argument must be a string or an identifier with complete string`,
 		),
+		INVALID_PATH: error(`Cannot find the specific path from the argument`),
 	},
 
-	INVALID_PATH: error(`Cannot find the specific path from the argument`),
+	MACROS: {
+		UNSUPPORTED_CALL: (node: ts.CallExpression, functionName: string) =>
+			error(`Unsupported call function: ${functionName}!`)(node),
+
+		UNSUPPORTED_IDENTIFIER: (node: ts.Identifier, name: string) =>
+			error(`Unsupported identifier: ${name}`)(node),
+	},
+
+	USED_BUT_UNRESOLVED_ROJO: (node: ts.Node, name: string) =>
+		error(`${name} was used but Rojo cannot be resolved`)(node),
 
 	COULD_NOT_FIND_ROJO_DATA: error(`Could not find rojo data`),
-
 	UNEXPECTED_ERROR: error(`Unexpected error`),
-
 	UNKNOWN_TYPE: error(`Unknown type!`),
-
 	SOURCE_FILE_NOT_IN_ROJO_CONFIG: (node: ts.SourceFile) =>
 		error(
 			`${node.fileName} is not registered or part of the Rojo configuration, please register it!`,

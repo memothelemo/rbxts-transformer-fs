@@ -33,7 +33,7 @@ export function transformCallExpression(
 	const macro = CALL_MACROS[functionName];
 	if (!macro) {
 		throw new DiagnosticError(
-			TransformerDiagnostics.UNSUPPORTED_CALL_MACRO(node, functionName),
+			TransformerDiagnostics.MACROS.UNSUPPORTED_CALL(node, functionName),
 		);
 	}
 

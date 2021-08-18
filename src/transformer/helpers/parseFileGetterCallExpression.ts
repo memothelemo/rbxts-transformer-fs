@@ -76,7 +76,7 @@ export function parseFileGetterCallExpression(
 		}
 		if (typeof path === "string" && !fs.existsSync(path as string)) {
 			throw new DiagnosticError(
-				TransformerDiagnostics.INVALID_PATH(node),
+				TransformerDiagnostics.GET_FILE_MACRO.INVALID_PATH(node),
 			);
 		}
 	}
