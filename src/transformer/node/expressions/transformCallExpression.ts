@@ -1,7 +1,7 @@
 import ts from "typescript";
 import { TransformerSafeErrors } from "../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
-import { LogManager } from "../../../shared/LogManager";
+import { printIfVerbose } from "../../../shared/functions/print";
 import { TransformContext } from "../../context";
 import { isSignatureFromTransformer } from "../../helpers/isSignatureFromTransformer";
 import { CALL_MACROS } from "../macros/call";
@@ -37,7 +37,7 @@ export function transformCallExpression(
 		);
 	}
 
-	LogManager.writeIfVerbose(`Call macro found! ${functionName}`);
+	printIfVerbose(`Call macro found: ${functionName}`);
 
 	return macro(context, node);
 }

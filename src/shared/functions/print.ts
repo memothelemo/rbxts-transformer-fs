@@ -8,6 +8,16 @@ const HEADER = `[${ansi.bgBlue(PKG_JSON.name)}]: `;
 const HEADER_SPACING = " ".repeat(HEADER.length);
 
 /**
+ * Same functionally as print but it can only printed if it is in verbose :D
+ * @param text
+ */
+export function printIfVerbose(...text: string[]) {
+	if (LogManager.isVerbose) {
+		print(...text);
+	}
+}
+
+/**
  * Allows to print something with additional header to avoid
  * getting people confused when compiling their project to Luau
  *

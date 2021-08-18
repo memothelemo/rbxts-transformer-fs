@@ -1,5 +1,4 @@
 // benchmark haven module
-
 import { print } from "../functions/print";
 
 /**

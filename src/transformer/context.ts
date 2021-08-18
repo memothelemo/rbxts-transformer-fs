@@ -1,5 +1,6 @@
 import ts from "typescript";
 import Rojo from "../rojo";
+import { printIfVerbose } from "../shared/functions/print";
 import { LogManager } from "../shared/LogManager";
 import { SOURCE_MODULE_TEXT } from "../shared/util/package";
 import { CommandLine, parseCommandLine } from "../shared/util/parseCommandLine";
@@ -50,6 +51,8 @@ export class TransformContext {
 		// instead if it is in verbose mode, we need to return a new line
 		if (this.parsedCommandLine.verboseMode) {
 			LogManager.write("\n");
+			printIfVerbose("Verbose mode activated, showing verbose logs");
+			printIfVerbose("Loading Rojo project");
 		}
 
 		this.srcDir = this.tsOptions.rootDir ?? this.projectDir;

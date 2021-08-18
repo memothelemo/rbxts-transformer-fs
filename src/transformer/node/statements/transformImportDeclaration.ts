@@ -1,4 +1,5 @@
 import ts, { factory } from "typescript";
+import { print, printIfVerbose } from "../../../shared/functions/print";
 import { LogManager } from "../../../shared/LogManager";
 import { TransformContext } from "../../context";
 
@@ -34,7 +35,7 @@ export function transformImportDeclaration(
 	node: ts.ImportDeclaration,
 ) {
 	if (isModuleImport(context, node)) {
-		LogManager.writeLine(`Removing transformer module import statement`);
+		printIfVerbose(`Removing transformer module import statement`);
 
 		const { importClause } = node;
 		if (importClause !== undefined && importClause.isTypeOnly) {
