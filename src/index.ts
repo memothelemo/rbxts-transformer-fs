@@ -32,7 +32,7 @@ export default function (program: ts.Program) {
 				return transformSourceFile(context, file);
 			};
 		} catch (e) {
-			if (e instanceof BaseError) {
+			if (e instanceof BaseError || e instanceof TransformerError) {
 				e.print();
 			} else {
 				console.log(e);

@@ -27,7 +27,7 @@ export function transformCallExpression(context: TransformContext, node: ts.Call
 	// call macros begins
 	const macro = CALL_MACROS[functionName];
 	if (!macro) {
-		throw new TransformerError(`Unsupported call function: ${functionName}!`);
+		throw new TransformerError(`Unsupported call function: '${functionName}!'`);
 	}
 
 	return macro(context, node);
