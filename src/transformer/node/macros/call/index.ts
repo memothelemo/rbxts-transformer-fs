@@ -6,6 +6,7 @@ import {
 } from "./instance";
 import { transformFileContentsCallMacro } from "./fileContents";
 import { transformJsonCallMacro } from "./json";
+import { transformFileNameCallMacro } from "./fileName";
 
 export type CallMacroFunction = (
 	context: TransformContext,
@@ -16,5 +17,6 @@ export const CALL_MACROS: { [index: string]: CallMacroFunction } = {
 	$instance: transformInstanceCallMacro,
 	$instanceWaitFor: transformInstanceWaitForCallMacro,
 	$fileContents: transformFileContentsCallMacro,
+	$fileName: transformFileNameCallMacro,
 	$json: transformJsonCallMacro,
 };

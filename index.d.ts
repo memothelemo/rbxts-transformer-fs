@@ -39,4 +39,4 @@ export function $fileContents(path: string): string;
  * **To**:
  * `print("src/example.ts" + " goodbye!")`
  */
-export const $fileName: string;
+export function $fileName(): string;

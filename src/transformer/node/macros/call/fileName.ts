@@ -1,9 +1,9 @@
 import path from "path";
 import { factory } from "typescript";
-import { IdentifierMacroFunction } from ".";
+import { CallMacroFunction } from ".";
 import { printIfVerbose } from "../../../../shared/functions/print";
 
-export const transformFileNameIdMacro: IdentifierMacroFunction = (
+export const transformFileNameCallMacro: CallMacroFunction = (
 	context,
 	node,
 ) => {
