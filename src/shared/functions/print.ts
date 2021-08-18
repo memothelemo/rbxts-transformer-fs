@@ -26,5 +26,5 @@ export function print(...text: string[]) {
 		result = text[0] + "\n";
 	}
 
-	LogManager.write(result);
+	LogManager.writeLine(result);
 }
