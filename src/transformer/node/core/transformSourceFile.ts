@@ -2,6 +2,7 @@ import ts from "typescript";
 import { TERMINATING_COMPILER_PROCESS_TXT } from "../../../shared/errors/constants";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
 import { print } from "../../../shared/functions/print";
+import { LogManager } from "../../../shared/LogManager";
 import { TransformContext } from "../../context";
 import { TransformerError } from "../../error";
 import { transformNode } from "./transformNode";
@@ -32,6 +33,8 @@ export function transformSourceFile(
 	context: TransformContext,
 	sourceFile: ts.SourceFile,
 ) {
+	LogManager.writeIfVerbose(`Transforming ${sourceFile.fileName}`);
+
 	const visitNode: ts.Visitor = node =>
 		ts.visitEachChild(
 			transformNodeOr(context, node, () =>

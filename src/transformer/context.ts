@@ -48,7 +48,9 @@ export class TransformContext {
 
 		// roblox-ts is known for not returning a new line nor console.log
 		// instead if it is in verbose mode, we need to return a new line
-		console.log(process.stdout.read());
+		if (this.parsedCommandLine.verboseMode) {
+			LogManager.write("\n");
+		}
 
 		this.srcDir = this.tsOptions.rootDir ?? this.projectDir;
 		this.outDir = this.tsOptions.outDir ?? this.projectDir;

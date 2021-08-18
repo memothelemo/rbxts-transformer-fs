@@ -1,6 +1,7 @@
 import ts from "typescript";
 import { TransformerSafeErrors } from "../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
+import { LogManager } from "../../../shared/LogManager";
 import { TransformContext } from "../../context";
 import { isSignatureFromTransformer } from "../../helpers/isSignatureFromTransformer";
 import { CALL_MACROS } from "../macros/call";
@@ -35,6 +36,8 @@ export function transformCallExpression(
 			TransformerSafeErrors.UNSUPPORTED_CALL_MACRO(node, functionName),
 		);
 	}
+
+	LogManager.writeIfVerbose(`Call macro found! ${functionName}`);
 
 	return macro(context, node);
 }

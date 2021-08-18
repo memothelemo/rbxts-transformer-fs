@@ -1,4 +1,5 @@
-import ts from "typescript";
+import ts, { factory } from "typescript";
+import { LogManager } from "../../../../shared/LogManager";
 import { TransformContext } from "../../../context";
 
 type CallMacroFunction = (
@@ -7,8 +8,8 @@ type CallMacroFunction = (
 ) => ts.Node | ts.Node[];
 
 export const CALL_MACROS: { [index: string]: CallMacroFunction } = {
-	rtfsMacros: (context, node) => {
-		console.log("Hi");
-		return node;
+	rtfsMacros: () => {
+		LogManager.writeIfVerbose("Replacing rtfsMacros to 'Hello world!'");
+		return factory.createStringLiteral("Hello world!");
 	},
 };
