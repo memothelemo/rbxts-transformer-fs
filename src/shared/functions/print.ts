@@ -24,16 +24,16 @@ export function printIfVerbose(...text: string[]) {
  * _An alternative to console.log_
  */
 export function print(...text: string[]) {
-	let result = "";
+	let result = HEADER;
 
 	if (text.length > 1) {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		result = text
+		result += text
 			.map((line, i) => (i === 0 ? line : `${HEADER_SPACING}${line}`))
 			.join("\n");
 	} else {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		result = text[0] + "\n";
+		result += text[0];
 	}
 
 	LogManager.writeLine(result);
