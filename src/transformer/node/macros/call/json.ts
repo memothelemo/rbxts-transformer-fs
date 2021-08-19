@@ -17,6 +17,10 @@ function parseArrayObject(sourceNode: ts.Node, array: Array<unknown>) {
 	);
 }
 
+function parseNumber(num: number) {
+	return factory.createNumericLiteral(num);
+}
+
 function parseString(str: string) {
 	return factory.createStringLiteral(str);
 }
@@ -29,6 +33,8 @@ function parseValue(sourceNode: ts.Node, value: unknown): ts.Expression {
 		return parseString(value as string);
 	} else if (Array.isArray(value)) {
 		return parseArrayObject(sourceNode, value);
+	} else if (typeOfValue === "number") {
+		return parseNumber(value as number);
 	} else if (typeOfValue === "object") {
 		return visitJsonTree(sourceNode, value as object);
 	}
