@@ -28,6 +28,8 @@ It allows to convert from any file system related functions to an expected funct
 
 - This transformer is a bit unstable at this stage. The owner of this package cannot ensure the reliability of this transformer (especially the `$json` function)
 
+- **BEWARE**: This transformer requires `@rbxts/types` are automatically typed `$instance` and `$instanceWaitFor` functions as Instance. For some reason it does not work, please create an issue found in `Issues` tab or simply click this [link](https://github.com/memothelemo/rbxts-transformer-fs). I will try my best to get integrate with Dependabot (in later versions).
+
 ## Migrating from rbxts-transformer-path
 
 See [MIGRATION](MIGRATION.md)
