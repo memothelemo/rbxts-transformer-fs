@@ -1,7 +1,6 @@
 import ts from "typescript";
 import { TransformerDiagnostics } from "../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
-import { printIfVerbose } from "../../../shared/functions/print";
 import { TransformContext } from "../../context";
 import { isSignatureFromTransformer } from "../../helpers/isSignatureFromTransformer";
 import { CALL_MACROS } from "../macros/call";
@@ -36,8 +35,6 @@ export function transformCallExpression(
 			TransformerDiagnostics.MACROS.UNSUPPORTED_CALL(node, functionName),
 		);
 	}
-
-	printIfVerbose(`Call macro found: ${functionName}`);
 
 	return macro(context, node);
 }

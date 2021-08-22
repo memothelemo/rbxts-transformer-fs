@@ -1,3 +1,4 @@
+import path from "path";
 import ts from "typescript";
 import { TERMINATING_COMPILER_PROCESS_TXT } from "../../../shared/errors/constants";
 import { DiagnosticError } from "../../../shared/errors/diagnostic";
@@ -33,7 +34,9 @@ export function transformSourceFile(
 	context: TransformContext,
 	sourceFile: ts.SourceFile,
 ) {
-	printIfVerbose(`Transforming ${sourceFile.fileName}`);
+	printIfVerbose(
+		`Transforming ${path.relative(context.srcDir, sourceFile.fileName)}`,
+	);
 
 	const visitNode: ts.Visitor = node =>
 		ts.visitEachChild(
@@ -52,14 +55,11 @@ export function transformSourceFile(
 
 	// provide them with required functions
 	if (context.isSourceFileNeedsUnshift(sourceFile)) {
-		printIfVerbose(`Generating required functions`);
-
 		const generatedStatements = new Array<ts.Statement>();
 		const requiredFunctions = context.getRequiredFunctions(sourceFile)!;
 		for (const functionName of requiredFunctions) {
 			const maker = REQUIRED_FUNCTIONS[functionName];
 			if (maker !== undefined) {
-				printIfVerbose(`Generating ${functionName}`);
 				generatedStatements.push(...maker(context, sourceFile));
 			}
 		}

@@ -1,3 +1,4 @@
+import path from "path";
 import ts from "typescript";
 import Rojo from "../rojo";
 import { PathTranslator } from "../shared/classes/pathTranslator";
@@ -95,11 +96,9 @@ export class TransformContext {
 	) {
 		const array = this.sourceFileRequires.get(sourceFile);
 		if (!array) {
-			printIfVerbose(`Requesting required function: ${name}`);
 			this.sourceFileRequires.set(sourceFile, new Array<string>(name));
 		} else {
 			if (!array.includes(name)) {
-				printIfVerbose(`Requesting required function: ${name}`);
 				array.push(name);
 			}
 		}
@@ -119,7 +118,10 @@ export class TransformContext {
 	private setupRojo() {
 		const rojoConfig = Rojo.Utils.findRojoConfigFilePath(this.projectDir);
 		if (rojoConfig) {
-			this.rojoProject = Rojo.Project.fromPath(rojoConfig);
+			// combining it with the srcDir (bug)
+			const trueRojoConfigPath = path.join(this.srcDir, rojoConfig);
+
+			this.rojoProject = Rojo.Project.fromPath(trueRojoConfigPath);
 			this.isGame = this.rojoProject.isGame;
 		}
 	}
