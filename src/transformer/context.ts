@@ -119,7 +119,7 @@ export class TransformContext {
 		const rojoConfig = Rojo.Utils.findRojoConfigFilePath(this.projectDir);
 		if (rojoConfig) {
 			// combining it with the srcDir (bug)
-			const trueRojoConfigPath = path.join(this.srcDir, rojoConfig);
+			const trueRojoConfigPath = path.join(this.projectDir, rojoConfig);
 
 			this.rojoProject = Rojo.Project.fromPath(trueRojoConfigPath);
 			this.isGame = this.rojoProject.isGame;
