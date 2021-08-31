@@ -13,8 +13,12 @@ import { REQUIRED_FUNCTIONS_BY_NAME } from "./helpers/requiredFunctions";
  * and gives context to this transformer.
  */
 export class TransformContext {
-	/** Each source file requires every function rbxts-transformer-fs provides */
-	private sourceFileRequires = new Map<ts.SourceFile, string[]>();
+	/**
+	 * Each source file requires every function rbxts-transformer-fs provides
+	 *
+	 * _Each key is a path of every source file_
+	 */
+	private sourceFileRequires = new Map<string, string[]>();
 
 	/** Parsed command line from arguments configured in CLI */
 	public parsedCommandLine: CommandLine;
@@ -86,7 +90,7 @@ export class TransformContext {
 
 	/** Gets the required functions of the source file */
 	public getRequiredFunctions(sourceFile: ts.SourceFile) {
-		return this.sourceFileRequires.get(sourceFile);
+		return this.sourceFileRequires.get(sourceFile.path);
 	}
 
 	/** Register a required function */
@@ -94,9 +98,13 @@ export class TransformContext {
 		sourceFile: ts.SourceFile,
 		name: typeof REQUIRED_FUNCTIONS_BY_NAME[keyof typeof REQUIRED_FUNCTIONS_BY_NAME],
 	) {
-		const array = this.sourceFileRequires.get(sourceFile);
+		const sourceFilePath = sourceFile.path;
+		const array = this.sourceFileRequires.get(sourceFilePath);
 		if (!array) {
-			this.sourceFileRequires.set(sourceFile, new Array<string>(name));
+			this.sourceFileRequires.set(
+				sourceFilePath,
+				new Array<string>(name),
+			);
 		} else {
 			if (!array.includes(name)) {
 				array.push(name);
@@ -106,7 +114,7 @@ export class TransformContext {
 
 	/** Checks if the source file requires making functions */
 	public isSourceFileNeedsUnshift(sourceFile: ts.SourceFile) {
-		return this.sourceFileRequires.has(sourceFile);
+		return this.sourceFileRequires.has(sourceFile.path);
 	}
 
 	/** A conditional function checks if the source file is from the transformer */

@@ -36,7 +36,10 @@ export const TransformerDiagnostics = {
 		NOT_STRING: error(
 			`Path argument must be a string or an identifier with complete string`,
 		),
-		INVALID_PATH: error(`Cannot find the specific path from the argument`),
+		INVALID_PATH: (node: ts.Node, absPath: string) =>
+			error(
+				`Cannot find the specific path from the argument (file location: ${absPath})`,
+			)(node),
 	},
 
 	MACROS: {
@@ -50,7 +53,9 @@ export const TransformerDiagnostics = {
 	USED_BUT_UNRESOLVED_ROJO: (node: ts.Node, name: string) =>
 		error(`${name} was used but Rojo cannot be resolved`)(node),
 
-	COULD_NOT_FIND_ROJO_DATA: error(`Could not find rojo data`),
+	COULD_NOT_FIND_ROJO_DATA: (node: ts.Node, absPath: string) =>
+		error(`Could not find rojo data (file location: ${absPath})`)(node),
+
 	UNEXPECTED_ERROR: error(`Unexpected error`),
 	UNKNOWN_TYPE: error(`Unknown type!`),
 	SOURCE_FILE_NOT_IN_ROJO_CONFIG: (node: ts.SourceFile) =>

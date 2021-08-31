@@ -9,18 +9,25 @@ import { TransformContext } from "../context";
 import { TransformerError } from "../error";
 import { extractStringFromAnyNode } from "./extractStringFromAnyNode";
 
-function getPathFromSpecifier(
+function getAbsolutePath(
 	context: TransformContext,
 	sourceFile: ts.SourceFile,
 	specifier: string,
-	fromRojo = true,
-	requireOutput = false,
 ) {
 	const sourceDir = path.dirname(sourceFile.fileName);
 	const absolutePath = specifier.startsWith(".")
 		? path.join(sourceDir, specifier)
 		: path.join(context.projectDir, specifier);
 
+	return absolutePath;
+}
+
+function getPathFromSpecifier(
+	context: TransformContext,
+	absolutePath: string,
+	fromRojo = true,
+	requireOutput = false,
+) {
 	let finalPath = absolutePath;
 	if (requireOutput) {
 		finalPath = context.pathTranslator.getOutputPath(absolutePath);
@@ -57,32 +64,41 @@ export function parseFileGetterCallExpression(
 		);
 	}
 
-	const path = getPathFromSpecifier(
+	// get absolute path
+	const sourceFile = context.getSourceFile(node);
+	const absPath = getAbsolutePath(context, sourceFile, pathArgText);
+
+	const outputPath = getPathFromSpecifier(
 		context,
-		context.getSourceFile(node),
-		pathArgText,
+		absPath,
 		fromRojo,
 		requireOutput,
 	);
 
-	if (!Array.isArray(path) && path === undefined && fromRojo) {
+	if (!Array.isArray(outputPath) && outputPath === undefined && fromRojo) {
 		throw new DiagnosticError(
-			TransformerDiagnostics.COULD_NOT_FIND_ROJO_DATA(node),
+			TransformerDiagnostics.COULD_NOT_FIND_ROJO_DATA(node, absPath),
 		);
 	} else {
-		if (Array.isArray(path) && !fromRojo) {
+		if (Array.isArray(outputPath) && !fromRojo) {
 			// I do not sure if it happens to anybody so I make it an error
 			// that they need to go to my github repo to report this
 			throw new TransformerError(
-				`Please make an issue in Github: ${PKG_JSON.bugs.url}\n[INFO]:\nArgument: ${pathArgText}\nResult: ${path}\nFrom rojo: ${fromRojo}\nRequires output: ${requireOutput}`,
+				`Please make an issue in Github: ${PKG_JSON.bugs.url}\n[INFO]:\nArgument: ${pathArgText}\nResult: ${outputPath}\nFrom rojo: ${fromRojo}\nRequires output: ${requireOutput}`,
 			);
 		}
-		if (typeof path === "string" && !fs.existsSync(path as string)) {
+		if (
+			typeof outputPath === "string" &&
+			!fs.existsSync(outputPath as string)
+		) {
 			throw new DiagnosticError(
-				TransformerDiagnostics.GET_FILE_MACRO.INVALID_PATH(node),
+				TransformerDiagnostics.GET_FILE_MACRO.INVALID_PATH(
+					node,
+					absPath,
+				),
 			);
 		}
 	}
 
-	return path!;
+	return outputPath!;
 }
