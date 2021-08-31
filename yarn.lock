@@ -73,10 +73,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@rbxts/types@^1.0.516":
-  version "1.0.516"
-  resolved "https://registry.yarnpkg.com/@rbxts/types/-/types-1.0.516.tgz#daaf792a775d3e17abe57ea3586e16d5667fa82f"
-  integrity sha512-SyETUvd360S6XE2CV2n1YYfCxIs+u2IIANm/W8VY0kZbMqtaSu29Y923YEvSkFY6TKrIERVw/dUfrMe+PAQV+w==
+"@rbxts/types@^1.0.521":
+  version "1.0.521"
+  resolved "https://registry.yarnpkg.com/@rbxts/types/-/types-1.0.521.tgz#d0452e4e5c4355513cb00f44398fba9963d86e13"
+  integrity sha512-DfMEOrMaLdRKuIJFeRZ1p+vQ3DmRZlUzK3hiFJ9BIedvlmf4hx/rZ0Vi05MAmpMeBMXuLN4RlwylgrIKl8Tiiw==
 
 "@types/fs-extra@^9.0.12":
   version "9.0.12"
