@@ -1036,10 +1036,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-ts-expose-internals@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/ts-expose-internals/-/ts-expose-internals-4.3.2.tgz#99ea3fd7b2b0750e994143c20fe269a5d434dee1"
-  integrity sha512-QqBZDp8fOVFW+/+taGQXx6K/gmU+/Zs9yLxcZcrMObHhmvqBzuImjIU7ZTY/HfcZStO2eXWtJrIlFNjepCV1ew==
+ts-expose-internals@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/ts-expose-internals/-/ts-expose-internals-4.4.2.tgz#5e99aa0f90b7956787f31a905cd01195b00e2647"
+  integrity sha512-Npe9xQaJBH/2bQkKNKEV5KmzAHG5MRZL+FUMamQhSAwtohDHLMrgOQD0QqWcAhUgWJOVy5+tplY5v55fTJQt+g==
 
 tslib@^1.8.1:
   version "1.14.1"
