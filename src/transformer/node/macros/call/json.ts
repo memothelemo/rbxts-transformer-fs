@@ -5,6 +5,7 @@ import { CallMacroFunction } from ".";
 import { TransformerDiagnostics } from "../../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../../shared/errors/diagnostic";
 import { printIfVerbose } from "../../../../shared/functions/print";
+import { warn } from "../../../../shared/functions/warn";
 import { parseFileGetterCallExpression } from "../../../helpers/parseFileGetterCallExpression";
 
 function parseBoolean(bool: boolean) {
@@ -62,6 +63,7 @@ function visitJsonTree(sourceNode: ts.Node, tree: object) {
 
 export const transformJsonCallMacro: CallMacroFunction = (context, node) => {
 	printIfVerbose("Transforming $json to ObjectLiteralExpression");
+	warn(`'$json' is deprecreated, please use import(filePath) instead`);
 
 	// get the file path
 	const filePath = parseFileGetterCallExpression(context, node, false);

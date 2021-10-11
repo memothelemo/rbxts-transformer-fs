@@ -7,11 +7,12 @@ import {
 import { transformFileContentsCallMacro } from "./fileContents";
 import { transformJsonCallMacro } from "./json";
 import { transformFileNameCallMacro } from "./fileName";
+import { transformResolveFileMacro } from "./resolveFile";
 
 export type CallMacroFunction = (
 	context: TransformContext,
 	node: ts.CallExpression,
-) => ts.Node | ts.Node[];
+) => ts.Node | ts.Node[] | undefined;
 
 export const CALL_MACROS: { [index: string]: CallMacroFunction } = {
 	$instance: transformInstanceCallMacro,
@@ -19,4 +20,5 @@ export const CALL_MACROS: { [index: string]: CallMacroFunction } = {
 	$fileContents: transformFileContentsCallMacro,
 	$fileName: transformFileNameCallMacro,
 	$json: transformJsonCallMacro,
+	$resolveFile: transformResolveFileMacro,
 };

@@ -1,5 +1,4 @@
 import fs from "fs-extra";
-import path from "path";
 import ts from "typescript";
 import { TransformerDiagnostics } from "../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../shared/errors/diagnostic";
@@ -8,19 +7,7 @@ import { PKG_JSON } from "../../shared/util/package";
 import { TransformContext } from "../context";
 import { TransformerError } from "../error";
 import { extractStringFromAnyNode } from "./extractStringFromAnyNode";
-
-function getAbsolutePath(
-	context: TransformContext,
-	sourceFile: ts.SourceFile,
-	specifier: string,
-) {
-	const sourceDir = path.dirname(sourceFile.fileName);
-	const absolutePath = specifier.startsWith(".")
-		? path.join(sourceDir, specifier)
-		: path.join(context.projectDir, specifier);
-
-	return absolutePath;
-}
+import { getAbsolutePath } from "./getAbsolutePath";
 
 function getPathFromSpecifier(
 	context: TransformContext,

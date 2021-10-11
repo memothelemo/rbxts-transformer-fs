@@ -32,6 +32,11 @@ export const TransformerDiagnostics = {
 			error(`Unsupported type: ${type}`),
 	},
 
+	RESOLVE_MACRO: {
+		INVALID_PATH_ARG: (id: number) =>
+			error(`Invalid argument #${id}, it must be function-like value`),
+	},
+
 	GET_FILE_MACRO: {
 		NOT_STRING: error(
 			`Path argument must be a string or an identifier with complete string`,
