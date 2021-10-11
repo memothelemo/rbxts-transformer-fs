@@ -26,6 +26,7 @@ export default function (program: ts.Program) {
 		);
 		return (file: ts.SourceFile) => {
 			// just in case if someone uses outdated version of roblox-ts (before 1.2.0?)
+			// or invalid version of TypeScript
 			// before the transformer problem has been fixed
 			if (!ts.isSourceFile(file)) {
 				const error = new TransformerError(OUTDATED_RBXTSC_TXT);

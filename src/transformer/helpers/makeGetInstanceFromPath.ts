@@ -240,7 +240,7 @@ export function makeGetInstanceFromPath(
 																		undefined,
 																		[
 																			factory.createStringLiteral(
-																				"The character isn't loaded but referenced from StarterCharacterScripts",
+																				"[rbxts-transformer-fs]: The character isn't loaded but referenced from StarterCharacterScripts",
 																			),
 																			factory.createNumericLiteral(
 																				"2",
@@ -388,8 +388,8 @@ export function makeGetInstanceFromPath(
 														[
 															factory.createTemplateExpression(
 																factory.createTemplateHead(
-																	"",
-																	"",
+																	"[rbxts-transformer-fs]: ",
+																	"[rbxts-transformer-fs]: ",
 																),
 																[
 																	factory.createTemplateSpan(
@@ -476,7 +476,7 @@ export function makeGetInstanceFromPath(
 														undefined,
 														[
 															factory.createStringLiteral(
-																"PlayerGui isn't loaded but referenced from PlayerGui",
+																"[rbxts-transformer-fs]: PlayerGui isn't loaded but referenced from PlayerGui",
 															),
 														],
 													),
@@ -795,8 +795,8 @@ export function makeGetInstanceFromPath(
 										[
 											factory.createTemplateExpression(
 												factory.createTemplateHead(
-													"Cannot find ",
-													"Cannot find ",
+													"[rbxts-transformer-fs]: Cannot find ",
+													"[rbxts-transformer-fs]: Cannot find ",
 												),
 												[
 													factory.createTemplateSpan(

@@ -32,9 +32,17 @@ export const TransformerDiagnostics = {
 			error(`Unsupported type: ${type}`),
 	},
 
-	RESOLVE_MACRO: {
+	RESOLVE_PATH_MACRO: {
+		ARGS_NOT_COMPLETE: error(
+			"$resolveFile was used but the arguments are not complete!",
+		),
 		INVALID_PATH_ARG: (id: number) =>
 			error(`Invalid argument #${id}, it must be function-like value`),
+	},
+
+	REQUIRE_FILE: {
+		NOT_FOUND: (path: string) => error(`'${path}' is required`),
+		NOT_FILE: (path: string) => error(`'${path}' is not a file`),
 	},
 
 	GET_FILE_MACRO: {

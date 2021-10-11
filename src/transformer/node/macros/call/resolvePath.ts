@@ -3,6 +3,7 @@ import ts from "typescript";
 import { CallMacroFunction } from ".";
 import { TransformerDiagnostics } from "../../../../shared/diagnostics/diagnostics";
 import { DiagnosticError } from "../../../../shared/errors/diagnostic";
+import { addCommentFromNode } from "../../../helpers/addCommentFromNode";
 import { extractStringFromAnyNode } from "../../../helpers/extractStringFromAnyNode";
 import { getAbsolutePath } from "../../../helpers/getAbsolutePath";
 import { isRealFunction } from "../../../helpers/isRealFunction";
@@ -14,8 +15,8 @@ function shouldWrap(node: ts.Node) {
 	return false;
 }
 
-export const transformResolveFileMacro: CallMacroFunction = (context, node) => {
-	// becasuse we're focusing on the real file path
+export const transformResolvePathMacro: CallMacroFunction = (context, node) => {
+	// becasuse we're focusing on the real path
 	// we don't need roblox path actually to do that
 	// extract string from any node (if possible)
 	const pathArg = node.arguments[0];
@@ -37,9 +38,16 @@ export const transformResolveFileMacro: CallMacroFunction = (context, node) => {
 	const resolvedCallback = node.arguments[1];
 	const notResolvedCallback = node.arguments[2];
 
+	// undefined stuff there
+	if (resolvedCallback === undefined || notResolvedCallback === undefined) {
+		throw new DiagnosticError(
+			TransformerDiagnostics.RESOLVE_FILE_MACRO.ARGS_NOT_COMPLETE(node),
+		);
+	}
+
 	if (!isRealFunction(context, resolvedCallback)) {
 		throw new DiagnosticError(
-			TransformerDiagnostics.RESOLVE_MACRO.INVALID_PATH_ARG(1)(
+			TransformerDiagnostics.RESOLVE_FILE_MACRO.INVALID_PATH_ARG(1)(
 				resolvedCallback,
 			),
 		);
@@ -47,7 +55,7 @@ export const transformResolveFileMacro: CallMacroFunction = (context, node) => {
 
 	if (!isRealFunction(context, notResolvedCallback)) {
 		throw new DiagnosticError(
-			TransformerDiagnostics.RESOLVE_MACRO.INVALID_PATH_ARG(2)(
+			TransformerDiagnostics.RESOLVE_FILE_MACRO.INVALID_PATH_ARG(2)(
 				notResolvedCallback,
 			),
 		);
@@ -62,7 +70,7 @@ export const transformResolveFileMacro: CallMacroFunction = (context, node) => {
 
 	let resultExp: ts.Expression;
 
-	// if that file does not exists, then the result should be resolved callback
+	// if that path does exists, then the result should be resolved callback
 	if (fs.existsSync(absPath)) {
 		resultExp = resolvedCallback;
 	} else {
@@ -75,5 +83,12 @@ export const transformResolveFileMacro: CallMacroFunction = (context, node) => {
 	}
 
 	// create new call expression
-	return ts.factory.updateCallExpression(node, resultExp, undefined, []);
+	const result = ts.factory.createCallExpression(
+		resultExp,
+		undefined,
+		undefined,
+	);
+
+	addCommentFromNode(result, `▼ rbxts-transformer-fs: $resolvePath ▼ --`);
+	return result;
 };

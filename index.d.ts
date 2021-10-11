@@ -15,7 +15,13 @@ export function $json<T extends object = object>(path: string): T;
 export function $instance<T extends Instance = Instance>(path: string): T;
 
 /**
- * Transforms either of two functions whether if the file does exists or not.
+ * Requires specific file path, throws out an error if it does not exists.
+ * @param path
+ */
+export function $requireFile(path: string): void;
+
+/**
+ * Transforms either of two functions whether if path provided with path argument does exists or not.
  * @param path Filesystem path
  * @example
  * import { $resolveFile } from "rbxts-transformer-fs";
@@ -29,7 +35,7 @@ export function $instance<T extends Instance = Instance>(path: string): T;
  * 	print("server script does not exists!");
  * })
  */
-export function $resolveFile(
+export function $resolvePath(
 	path: string,
 	successCallback: () => void,
 	failureCallback: () => void,

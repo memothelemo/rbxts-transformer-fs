@@ -7,7 +7,8 @@ import {
 import { transformFileContentsCallMacro } from "./fileContents";
 import { transformJsonCallMacro } from "./json";
 import { transformFileNameCallMacro } from "./fileName";
-import { transformResolveFileMacro } from "./resolveFile";
+import { transformResolvePathMacro } from "./resolvePath";
+import { transformRequireFileMacro } from "./requireFile";
 
 export type CallMacroFunction = (
 	context: TransformContext,
@@ -20,5 +21,6 @@ export const CALL_MACROS: { [index: string]: CallMacroFunction } = {
 	$fileContents: transformFileContentsCallMacro,
 	$fileName: transformFileNameCallMacro,
 	$json: transformJsonCallMacro,
-	$resolveFile: transformResolveFileMacro,
+	$resolvePath: transformResolvePathMacro,
+	$requireFile: transformRequireFileMacro,
 };

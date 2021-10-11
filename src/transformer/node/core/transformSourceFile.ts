@@ -5,6 +5,7 @@ import { DiagnosticError } from "../../../shared/errors/diagnostic";
 import { print, printIfVerbose } from "../../../shared/functions/print";
 import { TransformContext } from "../../context";
 import { TransformerError } from "../../error";
+import { addCommentFromNode } from "../../helpers/addCommentFromNode";
 import { REQUIRED_FUNCTIONS } from "../../helpers/requiredFunctions";
 import { transformNode } from "./transformNode";
 
@@ -23,6 +24,10 @@ function transformNodeOr<T>(
 		} else if (e instanceof DiagnosticError) {
 			context.addDiagnostic(e.diagnostic);
 			return originalNode;
+		} else if (e instanceof Error) {
+			print(
+				`Unexpected error! [${e.name}]: ${e.message}\n\nStack traceback:${e.stack}`,
+			);
 		} else {
 			print(`Unexpected error! ${e}`);
 			process.exit(1);
@@ -60,7 +65,16 @@ export function transformSourceFile(
 		for (const functionName of requiredFunctions) {
 			const maker = REQUIRED_FUNCTIONS[functionName];
 			if (maker !== undefined) {
-				generatedStatements.push(...maker(context, sourceFile));
+				// construct a comment if possible
+				const makerResult = maker(context, sourceFile);
+				const startingNode = makerResult[0];
+				if (startingNode !== undefined) {
+					addCommentFromNode(
+						startingNode,
+						`▼ rbxts-transformer-fs required function ▼ --`,
+					);
+				}
+				generatedStatements.push(...makerResult);
 			}
 		}
 
