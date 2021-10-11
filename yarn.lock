@@ -1047,10 +1047,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-ts-expose-internals@^4.4.2:
-  version "4.4.2"
-  resolved "https://registry.npmjs.org/ts-expose-internals/-/ts-expose-internals-4.4.2.tgz"
-  integrity sha512-Npe9xQaJBH/2bQkKNKEV5KmzAHG5MRZL+FUMamQhSAwtohDHLMrgOQD0QqWcAhUgWJOVy5+tplY5v55fTJQt+g==
+ts-expose-internals@^4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/ts-expose-internals/-/ts-expose-internals-4.4.3.tgz#02cd43988403b35d266ac69bf5bee02a885093f4"
+  integrity sha512-hvdD6g3aOdh6vnTMBpKfy+mfG4uTxN7aq5PYC1/s0MCqEKY3+1QD0o1yEgafIGzp9Bi4k7ciaB/lPWV8s55xTQ==
 
 tslib@^1.8.1:
   version "1.14.1"
