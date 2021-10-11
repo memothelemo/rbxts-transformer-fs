@@ -199,7 +199,7 @@ export class Project {
 				chainPaths.push(this._configFilePath);
 				chainPaths = chainPaths.map(v => {
 					return v === this._configFilePath
-						? "root"
+						? "$root"
 						: path.relative(this._configFilePath, v);
 				});
 
