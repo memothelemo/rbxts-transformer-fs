@@ -18,7 +18,7 @@
 		"url": "https://github.com/memothelemo/rbxts-transformer-fs/issues"
 	},
 	"devDependencies": {
-		"@types/fs-extra": "^9.0.12",
+		"@types/fs-extra": "^9.0.13",
 		"@types/node": "^16.7.8",
 		"@typescript-eslint/eslint-plugin": "^4.33.0",
 		"@typescript-eslint/parser": "^4.30.0",
