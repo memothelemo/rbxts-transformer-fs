@@ -89,7 +89,11 @@ export namespace Utils {
 			) {
 				filePath = filePath.slice(0, -subext.length);
 			}
-		} else if (ext === rojo.JSON_EXT) {
+		} else if (
+			ext === rojo.JSON_EXT ||
+			ext === rojo.RBXMX_EXT ||
+			ext === rojo.RBXM_EXT
+		) {
 			filePath = filePath.slice(0, -ext.length);
 		}
 		return filePath;

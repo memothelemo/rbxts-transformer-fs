@@ -34,12 +34,6 @@ function transformInstanceCallMacroInner(
 		);
 	}
 
-	// this is going a temporary patch for now
-	try {
-		const tailIndex = rbxPath.length - 1;
-		rbxPath[tailIndex] = path.basename(rbxPath[tailIndex] as string);
-	} catch {}
-
 	const typeArgument = node.typeArguments?.[0];
 	const args = new Array<ts.Expression>(
 		factory.createArrayLiteralExpression(

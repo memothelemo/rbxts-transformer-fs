@@ -10,4 +10,7 @@ export const MODULE_SUBEXT = "";
 
 export const INIT_NAME = "init";
 
+export const RBXM_EXT = ".rbxm";
+export const RBXMX_EXT = ".rbxmx";
+
 export const JSON_EXT = ".json";
