@@ -41,13 +41,13 @@ export const transformResolvePathMacro: CallMacroFunction = (context, node) => {
 	// undefined stuff there
 	if (resolvedCallback === undefined || notResolvedCallback === undefined) {
 		throw new DiagnosticError(
-			TransformerDiagnostics.RESOLVE_FILE_MACRO.ARGS_NOT_COMPLETE(node),
+			TransformerDiagnostics.RESOLVE_PATH_MACRO.ARGS_NOT_COMPLETE(node),
 		);
 	}
 
 	if (!isRealFunction(context, resolvedCallback)) {
 		throw new DiagnosticError(
-			TransformerDiagnostics.RESOLVE_FILE_MACRO.INVALID_PATH_ARG(1)(
+			TransformerDiagnostics.RESOLVE_PATH_MACRO.INVALID_PATH_ARG(1)(
 				resolvedCallback,
 			),
 		);
@@ -55,7 +55,7 @@ export const transformResolvePathMacro: CallMacroFunction = (context, node) => {
 
 	if (!isRealFunction(context, notResolvedCallback)) {
 		throw new DiagnosticError(
-			TransformerDiagnostics.RESOLVE_FILE_MACRO.INVALID_PATH_ARG(2)(
+			TransformerDiagnostics.RESOLVE_PATH_MACRO.INVALID_PATH_ARG(2)(
 				notResolvedCallback,
 			),
 		);
