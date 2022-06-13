@@ -23,13 +23,13 @@
 		"@typescript-eslint/eslint-plugin": "^4.33.0",
 		"@typescript-eslint/parser": "^4.30.0",
 		"eslint": "^7.32.0",
-		"eslint-config-prettier": "^8.3.0",
+		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-prettier": "^4.0.0",
 		"prettier": "^2.3.2",
 		"ts-expose-internals": "^4.4.4"
 	},
 	"dependencies": {
-		"@rbxts/types": "^1.0.548",
+		"@rbxts/types": "^1.0.607",
 		"ajv": "8.6.3",
 		"ansi-colors": "^4.1.1",
 		"fs-extra": "^10.0.0",
