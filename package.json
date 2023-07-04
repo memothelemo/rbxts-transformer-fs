@@ -3,11 +3,14 @@
   "version": "2.0.0-alpha.0",
   "main": "out/index.js",
   "typings": "index.d.ts",
+  "author": "memothelemo",
+  "license": "MIT",
   "scripts": {
     "build": "ttsc -b",
     "dev": "ttsc -b -w",
     "link:prepare": "npm link",
-    "link:test": "cd test && yarn install && npm link rbxts-transformer-fs"
+    "link:test": "cd test && yarn install && npm link rbxts-transformer-fs",
+    "prepack": "yarn build"
   },
   "repository": {
     "type": "git",
@@ -16,8 +19,6 @@
   "bugs": {
     "url": "https://github.com/memothelemo/rbxts-transformer-fs/issues"
   },
-  "author": "memothelemo",
-  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.3.3",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
