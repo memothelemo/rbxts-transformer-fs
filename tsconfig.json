@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"target": "ES2015",
+    "module": "commonjs",
+    "outDir": "out",
+    "baseUrl": "src/",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "downlevelIteration": true,
+    "types": ["@types/node"],
+    "paths": {
+      "core/*": ["core/*"],
+      "transform/*": ["transform/*"],
+      "utils/*": ["utils/*"],
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths",
+				"exclude": ["**/node_modules/**"]
+      }
+    ]
+  },
+  "exclude": ["old/**", "test/**"]
+}

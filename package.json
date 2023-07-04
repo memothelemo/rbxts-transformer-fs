@@ -1,0 +1,41 @@
+{
+  "name": "rbxts-transformer-fs",
+  "version": "2.0.0-alpha.0",
+  "main": "out/index.js",
+  "typings": "index.d.ts",
+  "scripts": {
+    "build": "ttsc -b",
+    "dev": "ttsc -b -w",
+    "link:prepare": "npm link",
+    "link:test": "cd test && yarn install && npm link rbxts-transformer-fs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/memothelemo/rbxts-transformer-fs"
+  },
+  "bugs": {
+    "url": "https://github.com/memothelemo/rbxts-transformer-fs/issues"
+  },
+  "author": "memothelemo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.60.1",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8",
+    "ts-expose-internals": "^4.9.4",
+    "ttypescript": "^1.5.15",
+    "typescript-transform-paths": "^3.4.6"
+  },
+  "dependencies": {
+    "@rbxts/types": "^1.0.703",
+    "@roblox-ts/rojo-resolver": "^1.0.4",
+    "chalk": "4.1.2",
+    "typescript": "^4.9.4",
+    "zod": "^3.21.4",
+    "zod-validation-error": "^1.3.1"
+  }
+}

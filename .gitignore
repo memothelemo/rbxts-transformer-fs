@@ -1,0 +1,20 @@
+# Built directories
+**/node_modules
+**/out
+
+# Build files
+*.tgz
+*.js
+
+# rbxts dump
+**/include
+
+# Logs
+*.log
+
+# Typescript cache
+*.tsbuildinfo
+
+# Roblox files
+*.rbxlx
+*.rbxl

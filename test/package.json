@@ -1,0 +1,15 @@
+{
+  "name": "test-game",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "d": "rm -rf out && rbxtsc --verbose"
+  },
+  "devDependencies": {
+    "@rbxts/compiler-types": "^2.1.0-types.1",
+    "@rbxts/types": "^1.0.703",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {}
+}

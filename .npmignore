@@ -1,0 +1,13 @@
+# dev files/dirs
+src
+.github
+.vscode
+
+*.tgz
+tsconfig.json
+.eslintignore
+.eslintrc.json
+
+yarn.lock
+
+tests
