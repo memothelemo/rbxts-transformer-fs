@@ -10,7 +10,8 @@
     "dev": "ttsc -b -w",
     "link:prepare": "npm link",
     "link:test": "cd test && yarn install && npm link rbxts-transformer-fs",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "setup": "yarn link:prepare && yarn link:test && yarn build"
   },
   "repository": {
     "type": "git",

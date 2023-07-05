@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "d": "rm -rf out && rbxtsc --verbose"
+    "d": "rm -rf out && rbxtsc --verbose",
+    "postinstall": "cd .. && yarn setup"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "^2.1.0-types.1",

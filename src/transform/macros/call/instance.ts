@@ -30,6 +30,6 @@ export const InstanceMacro: CallMacro = {
     // Getting the roblox tree version of that path
     if (!fs.existsSync(pathArg)) Diagnostics.error(firstArg, "Specified path not exists");
 
-    return macros.makeInstanceGetter(state, node, firstArg, pathArg, exactPath, false);
+    throw "Not implemented";
   },
 };
