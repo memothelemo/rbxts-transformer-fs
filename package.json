@@ -9,7 +9,7 @@
     "build": "ttsc -b",
     "dev": "ttsc -b -w",
     "link:prepare": "npm link",
-    "link:test": "cd test && yarn install && npm link rbxts-transformer-fs",
+    "link:test": "cd test && npm link rbxts-transformer-fs",
     "prepack": "yarn build",
     "setup": "yarn link:prepare && yarn link:test && yarn build"
   },

@@ -16,6 +16,7 @@
   "resolved" "file:.."
   "version" "2.0.0-alpha.0"
   dependencies:
+    "@rbxts/types" "^1.0.703"
     "@roblox-ts/rojo-resolver" "^1.0.4"
     "chalk" "4.1.2"
     "typescript" "^4.9.4"
