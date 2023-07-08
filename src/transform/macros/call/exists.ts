@@ -1,57 +1,48 @@
-import { Logger } from "core/classes/Logger";
 import fs from "fs";
-import path from "path";
-import { macros } from "../macros";
+import { Diagnostics } from "shared/services/Diagnostics";
+import { Logger } from "shared/services/Logger";
+import { TransformState } from "transform/classes/TransformState";
+import { f } from "transform/factory";
+import { macros } from "transform/macros";
+import ts from "typescript";
 import { CallMacro } from "../types";
-import { factory } from "transform/factory";
+
+function existsBase(state: TransformState, node: ts.CallExpression, checker: (path: string) => boolean) {
+  const firstArg = node.arguments[0];
+  if (!f.is.string(firstArg)) Diagnostics.error(firstArg, "Invalid path argument");
+
+  const path = macros.utils.resolvePath(state, firstArg, macros.utils.getStringValue(firstArg));
+  Logger.debug(`path = ${state.project.relativeTo(path)}`);
+
+  return f.bool(checker(path));
+}
 
 export const PathExistsMacro: CallMacro = {
-  getSymbols(state) {
-    return state.symbolProvider.getModuleFileOrThrow().getFromExports("$pathExists");
+  getSymbols(symbols) {
+    return symbols.moduleFile.getFromExport("$pathExists");
   },
 
   transform(state, node) {
-    const [firstArg] = node.arguments;
-    if (firstArg === undefined) return;
-
-    const pathArg = macros.resolvePathFromExpr(state, firstArg);
-    if (pathArg === undefined) return;
-    Logger.debug(`Arguments: path = ${path.relative(state.project.path, pathArg)}`);
-
-    return factory.bool(fs.existsSync(pathArg));
+    return existsBase(state, node, fs.existsSync);
   },
 };
 
 export const FileExistsMacro: CallMacro = {
-  getSymbols(state) {
-    return state.symbolProvider.getModuleFileOrThrow().getFromExports("$fileExists");
+  getSymbols(symbols) {
+    return symbols.moduleFile.getFromExport("$fileExists");
   },
 
   transform(state, node) {
-    const [firstArg] = node.arguments;
-    if (firstArg === undefined) return;
-
-    const pathArg = macros.resolvePathFromExpr(state, firstArg);
-    if (pathArg === undefined) return;
-    Logger.debug(`Arguments: path = ${path.relative(state.project.path, pathArg)}`);
-
-    return factory.bool(macros.filesystem.isExistsAndFile(pathArg));
+    return existsBase(state, node, p => macros.utils.isFile(p));
   },
 };
 
 export const DirExistsMacro: CallMacro = {
-  getSymbols(state) {
-    return state.symbolProvider.getModuleFileOrThrow().getFromExports("$dirExists");
+  getSymbols(symbols) {
+    return symbols.moduleFile.getFromExport("$dirExists");
   },
 
   transform(state, node) {
-    const [firstArg] = node.arguments;
-    if (firstArg === undefined) return;
-
-    const pathArg = macros.resolvePathFromExpr(state, firstArg);
-    if (pathArg === undefined) return;
-    Logger.debug(`Arguments: path = ${path.relative(state.project.path, pathArg)}`);
-
-    return factory.bool(macros.filesystem.isExistsAndDir(pathArg));
+    return existsBase(state, node, p => macros.utils.isDir(p));
   },
 };

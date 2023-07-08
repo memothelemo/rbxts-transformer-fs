@@ -1,60 +1,116 @@
 import { RojoResolver } from "@roblox-ts/rojo-resolver";
 import fs from "fs";
 import path from "path";
-import { TransformConfig } from "transform/config";
+import { PathTranslator } from "shared/classes/PathTranslator";
+import { TransformConfig } from "shared/config";
+import { CacheService } from "shared/services/CacheService";
+import { Logger } from "shared/services/Logger";
+import { assert } from "shared/utils/assert";
+import { benchmark } from "shared/utils/benchmark";
+import { getRootDir } from "shared/utils/getRootDir";
+import { CommandLine } from "shared/utils/parseCommandLine";
 import ts from "typescript";
-import { assert } from "utils/functions/assert";
-import { RbxtsCommandLine } from "utils/functions/parseCommandLine";
-import { getRootDir } from "utils/projectDirs";
-import { PathTranslator } from "../../core/classes/PathTranslator";
-import { CacheStorage } from "./CacheStorage";
-import { Logger } from "core/classes/Logger";
 import { SymbolProvider } from "./SymbolProvider";
-import { FsMacroManager } from "./MacroManager";
+import { ModuleMacroManager } from "./ModuleMacroManager";
 
-export class RbxtsProject {
+export class Project {
   public readonly path: string;
-  public readonly rootDir: string;
+  public readonly sourceDir: string;
   public readonly outputDir: string;
 
-  public constructor(cmdline: RbxtsCommandLine, program: ts.Program) {
-    const compilerOptions = program.getCompilerOptions();
-    this.path = cmdline.projectDir;
-    this.rootDir = getRootDir(program);
+  pathTranslator!: PathTranslator;
+  rojoResolver!: RojoResolver;
 
-    assert(compilerOptions.outDir, "outDir is missing");
-    this.outputDir = compilerOptions.outDir;
+  public constructor(cmdline: CommandLine, program: ts.Program) {
+    this.path = cmdline.projectDir;
+    this.sourceDir = getRootDir(program);
+
+    const compilerOptions = program.getCompilerOptions();
+    const outputDir = compilerOptions.outDir;
+    assert(outputDir, "outDir is missing");
+
+    this.outputDir = outputDir;
+    this.setupRojoResolver(cmdline, compilerOptions);
+  }
+
+  public relativeTo(to: string) {
+    return path.relative(this.path, to);
+  }
+
+  private setupRojoResolver(cmdline: CommandLine, compilerOptions: ts.CompilerOptions) {
+    let buildInfoOutputPath = ts.getTsBuildInfoEmitOutputFilePath(compilerOptions);
+    if (buildInfoOutputPath !== undefined) {
+      buildInfoOutputPath = path.normalize(buildInfoOutputPath);
+    }
+
+    const declaration = compilerOptions.declaration === true;
+    this.pathTranslator = new PathTranslator(this.sourceDir, this.outputDir, buildInfoOutputPath, declaration);
+
+    let configPath: string | undefined;
+    if (cmdline.rojoProjectPath) {
+      configPath = path.resolve(cmdline.rojoProjectPath);
+    } else {
+      configPath = RojoResolver.findRojoConfigFilePath(this.path).path;
+    }
+
+    assert(configPath, "Cannot find rojo project");
+
+    Logger.debug(`Loading Rojo resolver, config.path = ${this.relativeTo(configPath)}`);
+    const [rojoResolver, elapsed] = benchmark(() => CacheService.loadRojoResolver(configPath!));
+    this.rojoResolver = rojoResolver;
+    Logger.trace(`Successfully loaded Rojo resolver, elapsed = ${elapsed}`);
   }
 }
 
 export class TransformState {
-  public pathTranslator!: PathTranslator;
-  public rojoResolver!: RojoResolver;
-  public symbolProvider!: SymbolProvider;
-  public macroManager!: FsMacroManager;
+  public readonly project: Project;
 
   public readonly compilerOptions = this.program.getCompilerOptions();
-  public readonly project: RbxtsProject = new RbxtsProject(this.cmdline, this.program);
   public readonly typeChecker = this.program.getTypeChecker();
 
-  constructor(
+  public symbolProvider!: SymbolProvider;
+  public macros!: ModuleMacroManager;
+
+  public constructor(
+    cmdline: CommandLine,
     public readonly program: ts.Program,
     public readonly context: ts.TransformationContext,
     public readonly config: TransformConfig,
-    public readonly cmdline: RbxtsCommandLine,
   ) {
-    this.setupRojoResolver();
-    this.setupAllMacros();
+    Logger.debug("Initializing transform state");
+    Logger.pushTree();
+    const now = Date.now();
 
-    // CacheStorage.update(config, cmdline);
-  }
+    const project = new Project(cmdline, this.program);
+    this.project = project;
+    this.setupMacros();
 
-  public addDiagnosticToTS(diagnostic: ts.DiagnosticWithLocation) {
-    this.context.addDiagnostic(diagnostic);
+    const elapsed = Date.now() - now;
+    Logger.popTree();
+    Logger.debug(
+      `Initialized transform state, src.dir = ${project.relativeTo(project.sourceDir)}, out.dir = ${project.relativeTo(
+        project.outputDir,
+      )}, elapsed = ${elapsed} ms`,
+    );
   }
 
   public canTransformFiles() {
-    return this.symbolProvider.isModuleReferenced();
+    // Critical part there
+    return this.symbolProvider.isModuleFileLoaded();
+  }
+
+  private setupMacros() {
+    const symbolProvider = Logger.benchmark("Loading symbols...", true, () => new SymbolProvider(this));
+    const moduleMacroManager = Logger.benchmark(
+      "Loading all required macros...",
+      true,
+      () => new ModuleMacroManager(symbolProvider),
+    );
+
+    this.symbolProvider = symbolProvider;
+    this.macros = moduleMacroManager;
+
+    Logger.trace(`Registered ${moduleMacroManager.countAllMacros()} macros`);
   }
 
   public getType(node: ts.Node) {
@@ -67,23 +123,20 @@ export class TransformState {
     return symbol;
   }
 
-  public emitOutputFile(file: ts.SourceFile) {
-    if (!this.config.emitOutputFiles) return;
+  public emitTransformedFile(printer: ts.Printer, file: ts.SourceFile) {
+    const output = printer.printFile(file);
+    const emitFilePath = this.project.pathTranslator.getOutputPath(file.fileName).replace(/\.(lua)$/gm, ".transformed");
 
-    const output = CacheStorage.printer.printFile(file);
-    const outputFilePath = this.pathTranslator.getOutputPath(file.fileName).replace(/\.(lua)$/gm, ".transformed");
     Logger.debug(
-      `Emitting output file, file.path = ${path.relative(this.project.path, file.fileName)}, out.path = ${path.relative(
-        this.project.path,
-        outputFilePath,
-      )}`,
+      `Emitting transformed file, file.path = ${this.project.relativeTo(
+        file.fileName,
+      )}, out.file = ${this.project.relativeTo(emitFilePath)}`,
     );
 
-    // Just in case if that directory doesn't exists
-    const outputDir = path.dirname(outputFilePath);
-
-    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-    fs.writeFileSync(outputFilePath, output);
+    // To avoid errors given from fs module
+    const emitDir = path.dirname(emitFilePath);
+    if (!fs.existsSync(emitDir)) fs.mkdirSync(emitDir, { recursive: true });
+    fs.writeFileSync(emitFilePath, output);
   }
 
   private prereqStmtsStack = new Array<ts.Statement[]>();
@@ -103,53 +156,5 @@ export class TransformState {
     this.prereqStmtsStack.push([]);
     const result = callback();
     return [result, this.prereqStmtsStack.pop()!];
-  }
-
-  private setupAllMacros() {
-    Logger.debug("Loading symbols...");
-    const symbolProvider = Logger.pushTreeWith(() => new SymbolProvider(this));
-    this.symbolProvider = symbolProvider;
-
-    if (!this.symbolProvider.isModuleReferenced()) {
-      Logger.trace("Module file is not being used. no transformation/s needed");
-      return;
-    }
-
-    Logger.debug("Loading all required macros...");
-    const macroManager = Logger.pushTreeWith(() => new FsMacroManager(this));
-    this.macroManager = macroManager;
-
-    Logger.trace(`Registered ${this.macroManager.getTotalMacros()} macros`);
-  }
-
-  private setupRojoResolver() {
-    // We already resolved the rootDir and outDir in RbxtsProject
-    let buildInfoOutputPath = ts.getTsBuildInfoEmitOutputFilePath(this.compilerOptions);
-    if (buildInfoOutputPath !== undefined) {
-      buildInfoOutputPath = path.normalize(buildInfoOutputPath);
-    }
-
-    const declaration = this.compilerOptions.declaration === true;
-    this.pathTranslator = new PathTranslator(
-      this.project.rootDir,
-      this.project.outputDir,
-      buildInfoOutputPath,
-      declaration,
-    );
-
-    const argument = this.cmdline.rojoProjectPath;
-    let configPath: string | undefined;
-
-    if (argument && argument !== "") {
-      configPath = path.resolve(argument);
-    } else {
-      configPath = RojoResolver.findRojoConfigFilePath(this.project.path).path;
-    }
-
-    assert(configPath, "Cannot find rojo project");
-
-    Logger.debug(`Loading Rojo project, config.path = ${path.relative(this.project.path, configPath)}`);
-    this.rojoResolver = CacheStorage.loadRojoProject(configPath);
-    Logger.trace("Successfully loaded Rojo project");
   }
 }

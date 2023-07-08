@@ -1,7 +1,5 @@
 import chalk from "chalk";
-import { PACKAGE_NAME } from "core/constants";
-import { TransformConfig } from "transform/config";
-import { RbxtsCommandLine } from "utils/functions/parseCommandLine";
+import { PACKAGE_NAME } from "shared/constants";
 
 const TRANSFORMER_NAME_COLORED = PACKAGE_NAME;
 
@@ -41,9 +39,9 @@ export class Logger {
   /**
    * This should be ran in transformer's main function
    */
-  public static setup(config: TransformConfig, cmdline: RbxtsCommandLine) {
-    this.debugMode = config.debug;
-    this.canPrintTrace = cmdline.verbose;
+  public static setup(debugMode: boolean, verbose: boolean) {
+    this.debugMode = debugMode;
+    this.canPrintTrace = verbose;
     if (this.canPrintTrace) this.writeRaw("\n");
   }
 
@@ -65,10 +63,6 @@ export class Logger {
     if (this.treeStackLength !== 0) this.treeStackLength -= 1;
   }
 
-  public static resetTree() {
-    if (this.debugMode) this.treeStackLength = 0;
-  }
-
   public static debug(...messages: unknown[]) {
     if (this.debugMode) this.writeLine(DEBUG_CODE, messages);
   }
@@ -83,5 +77,19 @@ export class Logger {
 
   public static error(...messages: unknown[]) {
     this.writeLine(ERROR_CODE, messages);
+  }
+
+  public static benchmark<T>(message: string, push: boolean, callback: () => T) {
+    Logger.debug(message);
+    if (push) Logger.pushTree();
+
+    const now = Date.now();
+    const result = callback();
+    const elapsed = Date.now() - now;
+
+    Logger.debug(chalk.gray(`elapsed = ${elapsed} ms`));
+    if (push) Logger.popTree();
+
+    return result;
   }
 }

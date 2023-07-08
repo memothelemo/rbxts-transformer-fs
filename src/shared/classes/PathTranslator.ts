@@ -1,5 +1,5 @@
 import path from "path";
-import { assert } from "utils/functions/assert";
+import { assert } from "shared/utils/assert";
 
 const TS_EXT = ".ts";
 const D_EXT = ".d";

@@ -4,7 +4,7 @@ import { transformChildren } from "./transformChildren";
 import { transformExpression } from "./transformExpression";
 import { transformStatement } from "./transformStatement";
 
-export function transformNode(state: TransformState, node: ts.Node): ts.Node | ts.Statement[] {
+export function transformNode(state: TransformState, node: ts.Node) {
   if (ts.isExpression(node)) {
     return transformExpression(state, node);
   } else if (ts.isStatement(node)) {

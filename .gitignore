@@ -1,20 +1,23 @@
-# Built directories
+# built artifacts
 **/node_modules
 **/out
-
-# Build files
-*.tgz
-*.js
-
-# rbxts dump
 **/include
 
-# Logs
-*.log
-
-# Typescript cache
+*.tgz
+*.js
 *.tsbuildinfo
 
-# Roblox files
+# logs
+*.log
+
+# roblox files
 *.rbxlx
 *.rbxl
+
+# temp & lock files
+*.rbxlx.lock
+*.rbxl.lock
+*.odt#
+
+*.temp
+*.tmp

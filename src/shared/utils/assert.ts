@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { PACKAGE_ISSUES_URL } from "core/constants";
+import { PACKAGE_ISSUES_URL } from "shared/constants";
 
 /**
  * Asserts the `condition` or `value`, stops the debugger on failure.

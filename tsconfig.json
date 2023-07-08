@@ -10,9 +10,8 @@
     "downlevelIteration": true,
     "types": ["@types/node"],
     "paths": {
-      "core/*": ["core/*"],
+      "shared/*": ["shared/*"],
       "transform/*": ["transform/*"],
-      "utils/*": ["utils/*"],
     },
     "plugins": [
       {

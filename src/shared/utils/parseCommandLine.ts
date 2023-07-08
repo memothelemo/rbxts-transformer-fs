@@ -4,7 +4,7 @@ import path from "path";
 
 import { assert } from "./assert";
 
-export interface RbxtsCommandLine {
+export interface CommandLine {
   readonly projectDir: string;
   readonly rojoProjectPath?: string;
   readonly tsConfigPath: string;
@@ -30,8 +30,8 @@ function findTsConfigPath(projectPath: string) {
 /**
  * Parses the command line arguments passed when `rbxtsc` ran.
  */
-export function parseCommandLine(): RbxtsCommandLine {
-  const options = {} as Writable<RbxtsCommandLine>;
+export function parseCommandLine(): CommandLine {
+  const options = {} as Writable<CommandLine>;
   const projectIdx = process.argv.findIndex(x => x === "-p" || x === "--project");
   let tsConfigPath: string | undefined;
   {

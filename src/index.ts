@@ -1,10 +1,13 @@
-import { Logger } from "core/classes/Logger";
-import path from "path";
-import ts from "typescript";
-import { parseTransformConfig } from "transform/config";
-import { parseCommandLine } from "utils/functions/parseCommandLine";
+import chalk from "chalk";
+import { parseTransformConfig } from "shared/config";
+import { Logger } from "shared/services/Logger";
+import { parseCommandLine } from "shared/utils/parseCommandLine";
 import { TransformState } from "transform/classes/TransformState";
+import { f } from "transform/factory";
 import { transformSourceFile } from "transform/nodes/transformSourceFile";
+import ts from "typescript";
+
+const printer = ts.createPrinter({});
 
 /**
  * Every roblox-ts transformers must export default function.
@@ -18,7 +21,8 @@ import { transformSourceFile } from "transform/nodes/transformSourceFile";
  * for every changed source file and transforms into a new source file
  * made from this transformer.
  *
- * `transformConfig` is where we configure this transformer in `tsconfig.json`
+ * `transformConfig` is where we configure this transformer in `tsconfig.json`.
+ *
  * **Example**:
  * ```
  * "plugins": [
@@ -31,10 +35,10 @@ import { transformSourceFile } from "transform/nodes/transformSourceFile";
  * and calls twice to get the function where it is called for
  * every changed source file.
  */
-function main(program: ts.Program, uncheckedCfg: unknown) {
-  const config = parseTransformConfig(uncheckedCfg);
+function main(program: ts.Program, props: unknown) {
+  const config = parseTransformConfig(props);
   const cmdline = parseCommandLine();
-  Logger.setup(config, cmdline);
+  Logger.setup(config.debug, cmdline.verbose);
 
   Logger.debug("Running with config:", config);
   Logger.debug("Running with cmdline:", cmdline);
@@ -48,35 +52,18 @@ function main(program: ts.Program, uncheckedCfg: unknown) {
   }
 
   return (context: ts.TransformationContext): ((file: ts.SourceFile) => ts.SourceFile) => {
-    Logger.debug("Loading project");
-    const now = Date.now();
-    const state = Logger.pushTreeWith(() => new TransformState(program, context, config, cmdline));
-    const elapsed = Date.now() - now;
+    const state = new TransformState(cmdline, program, context, config);
+    f.set(state.context.factory);
 
-    const projectInfo = state.project;
-    Logger.debug(
-      `Project loaded successfully, rootDir = ${path.relative(
-        projectInfo.path,
-        projectInfo.rootDir,
-      )}, outDir = ${path.relative(projectInfo.path, projectInfo.outputDir)}, elapsed = ${elapsed} ms`,
-    );
-
-    // Maybe index.d.ts file isn't being used from the project
     if (!state.canTransformFiles()) {
+      Logger.debug("Not ready to transform, retaining all source files");
       return file => file;
     }
 
-    Logger.trace("Module is referenced, ready to transform source files");
+    Logger.debug(chalk.blue.bold("Ready to transform source files"));
     return file => {
-      Logger.debug(`Transforming file, file.path = ${path.relative(state.project.path, file.fileName)}`);
-
-      const now = Date.now();
-      const result = Logger.pushTreeWith(() => transformSourceFile(state, file));
-      const elapsed = Date.now() - now;
-
-      Logger.debug(`Done transforming file, elapsed = ${elapsed} ms`);
-      state.emitOutputFile(result);
-
+      const result = transformSourceFile(state, file);
+      if (config.emitOutputFiles) state.emitTransformedFile(printer, result);
       return result;
     };
   };

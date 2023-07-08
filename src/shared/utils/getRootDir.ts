@@ -1,6 +1,6 @@
 import path from "path";
 import ts from "typescript";
-import { assert } from "./functions/assert";
+import { assert } from "./assert";
 
 function findAncestorDir(dirs: string[]) {
   dirs = dirs.map(path.normalize).map(v => (v.endsWith(path.sep) ? v : v + path.sep));

@@ -1,23 +1,27 @@
-import { CallMacro } from "../types";
 import { DirExistsMacro, FileExistsMacro, PathExistsMacro } from "./exists";
-import { ExpectDirMacro, ExpectFileMacro, ExpectPathMacro } from "./expect";
 import { HashFileMacro } from "./hashFile";
-import { InstanceMacro } from "./instance";
-import { ReadFileMacro, ReadFileOptMacro } from "./readFile";
+import { CallMacro } from "../types";
+import { ExpectDirMacro, ExpectFileMacro, ExpectPathMacro } from "./expect";
+import { ReadFileMacro } from "./readFile";
+import { InstanceCallMacro } from "./instance";
 
 export const CALL_MACROS = new Array<CallMacro>(
+  // $**Exists
+  DirExistsMacro,
+  FileExistsMacro,
+  PathExistsMacro,
+
+  // $hashFile
   HashFileMacro,
 
-  ReadFileMacro,
-  ReadFileOptMacro,
-
-  PathExistsMacro,
-  FileExistsMacro,
-  DirExistsMacro,
-
+  // $expect**
   ExpectDirMacro,
   ExpectFileMacro,
   ExpectPathMacro,
 
-  InstanceMacro,
+  // $readFile
+  ReadFileMacro,
+
+  // $**instance\!(s)**
+  InstanceCallMacro,
 );

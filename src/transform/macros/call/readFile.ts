@@ -1,53 +1,50 @@
-import { Logger } from "core/classes/Logger";
-import { Diagnostics } from "core/classes/Diagnostics";
-import path from "path";
-import { factory } from "transform/factory";
-import { macros } from "../macros";
+import fs from "fs";
+import { Diagnostics } from "shared/services/Diagnostics";
+import { Logger } from "shared/services/Logger";
+import { assert } from "shared/utils/assert";
+import { formatFileSize } from "shared/utils/formatFileSize";
+import { macros } from "transform/macros";
+import { f } from "transform/factory";
 import { CallMacro } from "../types";
 
 export const ReadFileMacro: CallMacro = {
-  getSymbols(state) {
-    const file = state.symbolProvider.getModuleFileOrThrow();
-    return file.getFromExports("$readFile");
+  getSymbols(symbols) {
+    return symbols.moduleFile.getFromExport("$readFile");
   },
 
   transform(state, node) {
-    const [firstArg] = node.arguments;
-    if (firstArg === undefined) return;
+    const firstArg = node.arguments[0];
+    if (!f.is.string(firstArg)) Diagnostics.error(firstArg, "Invalid path argument");
 
-    const filePath = macros.resolvePathFromExpr(state, firstArg);
-    if (filePath === undefined) return;
-    Logger.debug(`Arguments: path = ${path.relative(state.project.rootDir, filePath)}`);
+    const secondArg = node.arguments[1];
+    let optional = false;
 
-    const now = Date.now();
-    const result = macros.readFileOpt(state, firstArg, filePath);
-    if (result === undefined) Diagnostics.error(firstArg, "Specified path not found");
+    if (secondArg !== undefined) {
+      if (!f.is.bool(secondArg)) Diagnostics.error(secondArg, "Expected boolean value");
+      optional = macros.utils.getBooleanValue(secondArg);
+    }
 
-    const elapsed = Date.now() - now;
-    Logger.debug(`Done reading file, elapsed = ${elapsed} ms`);
-    return result;
-  },
-};
+    const path = macros.utils.resolvePath(state, firstArg, macros.utils.getStringValue(firstArg));
+    Logger.debug(`path = ${state.project.relativeTo(path)}, optional = ${optional}`);
 
-export const ReadFileOptMacro: CallMacro = {
-  getSymbols(state) {
-    const file = state.symbolProvider.getModuleFileOrThrow();
-    return file.getFromExports("$readFileOpt");
-  },
+    if (!macros.utils.isFile(path)) {
+      if (!optional) Diagnostics.error(firstArg, "Specified file not found");
+      return f.nil();
+    }
 
-  transform(state, node) {
-    const [firstArg] = node.arguments;
-    if (firstArg === undefined) return;
+    const fileSize = macros.utils.getFileSize(path);
+    assert(fileSize !== undefined);
 
-    const filePath = macros.resolvePathFromExpr(state, firstArg);
-    if (filePath === undefined) return;
-    Logger.debug(`Arguments: path = ${path.relative(state.project.rootDir, filePath)}`);
+    const { readFileSizeLimit } = state.config;
+    if (fileSize > readFileSizeLimit) {
+      Diagnostics.error(
+        firstArg,
+        `This file reached size limit (limit = ${formatFileSize(readFileSizeLimit)}, actual = ${formatFileSize(
+          fileSize,
+        )})`,
+      );
+    }
 
-    const now = Date.now();
-    const result = macros.readFileOpt(state, firstArg, filePath) ?? factory.none();
-    const elapsed = Date.now() - now;
-
-    Logger.debug(`Done reading file, elapsed = ${elapsed} ms`);
-    return result;
+    return f.string(fs.readFileSync(path).toString());
   },
 };

@@ -1,4 +1,3 @@
-import { VariableMacro } from "../types";
-import { CurrentFileNameMacro } from "./currentFileName";
+import { FileNameMacro } from "./fileName";
 
-export const VARIABLE_MACROS = new Array<VariableMacro>(CurrentFileNameMacro);
+export const VARIABLE_MACROS = [FileNameMacro];

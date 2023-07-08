@@ -1,35 +1,29 @@
-import { Diagnostics } from "core/classes/Diagnostics";
-import { Logger } from "core/classes/Logger";
-import fs from "fs";
-import ts from "typescript";
-import path from "path";
+import { Diagnostics } from "shared/services/Diagnostics";
+import { Logger } from "shared/services/Logger";
+import { f } from "transform/factory";
+import { macros } from "transform/macros";
 import { CallMacro } from "../types";
-import { macros } from "../macros";
 
-export const InstanceMacro: CallMacro = {
-  getSymbols(state) {
-    return state.symbolProvider.getModuleFileOrThrow().getFromExports("$instance");
+export const InstanceCallMacro: CallMacro = {
+  getSymbols(symbols) {
+    return symbols.moduleFile.getFromExport("$findInstance");
   },
 
   transform(state, node) {
-    // Resolving $instance call arguments
-    const [firstArg, secondArg] = node.arguments;
-    if (firstArg === undefined) return;
+    const firstArg = node.arguments[0];
+    if (!f.is.string(firstArg)) Diagnostics.error(firstArg, "Invalid path argument");
 
-    const pathArg = macros.resolvePathFromExpr(state, firstArg);
-    let exactPath = false;
+    const secondArg = node.arguments[1];
+    let exact = false;
 
-    if (pathArg === undefined) return;
     if (secondArg !== undefined) {
-      if (!ts.isBooleanLiteral(secondArg)) return;
-      exactPath = secondArg.kind === ts.SyntaxKind.TrueKeyword;
+      if (!f.is.bool(secondArg)) Diagnostics.error(secondArg, "Expected boolean value");
+      exact = macros.utils.getBooleanValue(secondArg);
     }
 
-    Logger.debug(`Arguments: path = ${path.relative(state.project.rootDir, pathArg)}, exactPath = ${exactPath}`);
+    const path = macros.utils.resolvePath(state, firstArg, macros.utils.getStringValue(firstArg));
+    Logger.debug(`path = ${state.project.relativeTo(path)}, exact = ${exact}`);
 
-    // Getting the roblox tree version of that path
-    if (!fs.existsSync(pathArg)) Diagnostics.error(firstArg, "Specified path not exists");
-
-    throw "Not implemented";
+    return macros.utils.getInstanceInfoFromPath(state, firstArg, path, exact, true);
   },
 };

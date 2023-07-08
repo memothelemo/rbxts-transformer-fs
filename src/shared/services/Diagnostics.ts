@@ -1,4 +1,4 @@
-import { PACKAGE_NAME } from "core/constants";
+import { PACKAGE_NAME } from "shared/constants";
 import ts from "typescript";
 
 function createDiagnosticAtLocation(

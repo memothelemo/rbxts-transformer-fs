@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "d": "rm -rf out && rbxtsc --verbose",
+    "build": "rm -rf out && rbxtsc --verbose",
+    "watch": "rm -rf out && rbxtsc --verbose --watch",
     "postinstall": "cd .. && yarn setup"
   },
   "devDependencies": {
