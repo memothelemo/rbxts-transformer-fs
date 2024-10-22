@@ -1,9 +1,10 @@
-import { catchDiagnostic } from "shared/utils/diagnostics";
-import { TransformState } from "transform/classes/TransformState";
+import { catchDiagnostic } from "@transformer/shared/util/catchDiagnostic";
 import ts from "typescript";
-import { transformCallExpression } from "./expressions/transformCallExpression";
+
+import { TransformState } from "../state";
+import { transformNode } from "./transformNode";
 import { transformVariableAccessExpression } from "./expressions/transformVariableAccessExpression";
-import { transformChildren } from "./transformChildren";
+import { transformCallExpression } from "./expressions/transformCallExpression";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TRANSFORMERS = new Map<ts.SyntaxKind, (state: TransformState, node: any) => ts.Expression>([
@@ -13,12 +14,18 @@ const TRANSFORMERS = new Map<ts.SyntaxKind, (state: TransformState, node: any) =
   [ts.SyntaxKind.CallExpression, transformCallExpression],
 ]);
 
-export function transformExpression(state: TransformState, expression: ts.Expression): ts.Expression {
+export function transformExpression(
+  state: TransformState,
+  expression: ts.Expression,
+): ts.Expression {
   return catchDiagnostic(expression, () => {
     const transformer = TRANSFORMERS.get(expression.kind);
-    if (transformer !== undefined) {
-      return transformer(state, expression);
-    }
-    return transformChildren(state, expression);
+    if (transformer) return transformer(state, expression);
+
+    return ts.visitEachChild(
+      expression,
+      new_node => transformNode(state, new_node),
+      state.ts_context,
+    );
   });
 }

@@ -1,44 +1,28 @@
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-/**
- * Configuration for `rbxts-transformer-fs`
- */
-export type TransformConfig = Required<z.infer<typeof configChecker>>;
+export type TransformConfig = Required<z.infer<typeof checker>>;
 
-type Required<T> = {
-  [K in keyof T]-?: T[K];
-};
-
-const configChecker = z.object({
+const checker = z.object({
   debug: z.boolean().optional(),
-  // watchHashedFiles: z.boolean().optional(),
-  emitOutputFiles: z.boolean().optional(),
   hashFileSizeLimit: z.number().positive().optional(),
   readFileSizeLimit: z.number().positive().optional(),
-  typeCheckInstances: z.boolean().optional(),
+  saveTransformedFiles: z.boolean().optional(),
 });
 
-const DEFAULTS: TransformConfig = {
+const defaults: TransformConfig = {
   debug: false,
-  emitOutputFiles: false,
-  /** 20 MB limit */
-  hashFileSizeLimit: 20 * 1000 * 1000,
-  /** 100 KB limit */
-  readFileSizeLimit: 100 * 1000,
-  typeCheckInstances: true,
-  // watchHashedFiles: false,
+  // 4 GB limit, we're using streaming anyway if the file is too big!
+  hashFileSizeLimit: 4 * 1000 * 1000 * 1000,
+  // 10 KB limit only...
+  readFileSizeLimit: 10 * 1000,
+  saveTransformedFiles: false,
 };
 
-/**
- * Attempts to parse the `TransformConfig`.
- *
- * It will throw an error if it fails to parse `TransformConfig`.
- */
 export function parseTransformConfig(raw: unknown) {
   let config = {} as TransformConfig;
   if (raw !== undefined) {
-    const result = configChecker.safeParse(raw);
+    const result = checker.safeParse(raw);
     if (result.success) {
       config = raw as TransformConfig;
     } else {
@@ -47,7 +31,7 @@ export function parseTransformConfig(raw: unknown) {
     }
   }
 
-  for (const [key, value] of Object.entries(DEFAULTS)) {
+  for (const [key, value] of Object.entries(defaults)) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((config as any)[key] as any) ??= value;
   }

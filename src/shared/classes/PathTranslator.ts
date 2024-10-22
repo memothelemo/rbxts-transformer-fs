@@ -1,5 +1,5 @@
+import { assert } from "@transformer/shared/util/assert";
 import path from "path";
-import { assert } from "shared/utils/assert";
 
 const TS_EXT = ".ts";
 const D_EXT = ".d";
@@ -11,7 +11,11 @@ const TRANSFORMED_EXT = ".transformed";
 const TSX_EXT = ".tsx";
 
 class PathInfo {
-  private constructor(public dirName: string, public fileName: string, public exts: Array<string>) {}
+  private constructor(
+    public dirName: string,
+    public fileName: string,
+    public exts: Array<string>,
+  ) {}
 
   public static from(filePath: string) {
     const dirName = path.dirname(filePath);
@@ -53,7 +57,10 @@ export class PathTranslator {
     const makeRelative = this.makeRelativeFactory();
     const pathInfo = PathInfo.from(filePath);
 
-    if ((pathInfo.extsPeek() === TS_EXT || pathInfo.extsPeek() === TSX_EXT) && pathInfo.extsPeek(1) !== D_EXT) {
+    if (
+      (pathInfo.extsPeek() === TS_EXT || pathInfo.extsPeek() === TSX_EXT) &&
+      pathInfo.extsPeek(1) !== D_EXT
+    ) {
       pathInfo.exts.pop(); // pop .tsx?
 
       // index -> init
@@ -76,7 +83,10 @@ export class PathTranslator {
     const makeRelative = this.makeRelativeFactory();
     const pathInfo = PathInfo.from(filePath);
 
-    if ((pathInfo.extsPeek() === TS_EXT || pathInfo.extsPeek() === TSX_EXT) && pathInfo.extsPeek(1) !== D_EXT) {
+    if (
+      (pathInfo.extsPeek() === TS_EXT || pathInfo.extsPeek() === TSX_EXT) &&
+      pathInfo.extsPeek(1) !== D_EXT
+    ) {
       pathInfo.exts.pop(); // pop .tsx?
       pathInfo.exts.push(DTS_EXT);
     }
@@ -152,7 +162,10 @@ export class PathTranslator {
     }
 
     if (this.declaration) {
-      if ((pathInfo.extsPeek() === TS_EXT || pathInfo.extsPeek() === TSX_EXT) && pathInfo.extsPeek(1) === D_EXT) {
+      if (
+        (pathInfo.extsPeek() === TS_EXT || pathInfo.extsPeek() === TSX_EXT) &&
+        pathInfo.extsPeek(1) === D_EXT
+      ) {
         const tsExt = pathInfo.exts.pop(); // pop .tsx?
         assert(tsExt);
         pathInfo.exts.pop(); // pop .d

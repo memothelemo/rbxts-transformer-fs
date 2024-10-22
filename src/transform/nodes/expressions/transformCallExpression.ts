@@ -1,13 +1,27 @@
-import { TransformState } from "transform/classes/TransformState";
-import { macros } from "transform/macros";
-import ts from "typescript";
-import { transformChildren } from "../transformChildren";
+import { transformMacro } from "@transformer/main/macros";
+import { TransformState } from "@transformer/main/state";
+import Diagnostics from "@transformer/shared/services/diagnostics";
 
-export function transformCallExpression(state: TransformState, expr: ts.CallExpression): ts.Expression {
-  const symbol = state.getSymbol(expr.expression, true);
+import ts from "typescript";
+import { transformNode } from "../transformNode";
+
+export function transformCallExpression(
+  state: TransformState,
+  node: ts.CallExpression,
+): ts.Expression {
+  const symbol = state.getSymbol(node.expression, true);
   if (symbol) {
-    const macro = state.macros.getCallMacro(symbol);
-    if (macro) return macros.transform(state, expr, macro);
+    const macro = state.macro_manager.getCallMacro(symbol);
+    if (macro) return transformMacro(state, macro, node, symbol);
+
+    // non-value call macros are also call macros but they
+    // do not emit/transform into a value so we need throw
+    // an error to the user that this macro is not permitted
+    // to use as a value.
+    const invalid_use_macro = state.macro_manager.getNonValueCallMacro(symbol);
+    if (invalid_use_macro) {
+      Diagnostics.error(node, `${invalid_use_macro._resolved_name!} should not be used as value!`);
+    }
   }
-  return transformChildren(state, expr);
+  return ts.visitEachChild(node, new_node => transformNode(state, new_node), state.ts_context);
 }

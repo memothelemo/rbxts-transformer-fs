@@ -1,6 +1,6 @@
 {
-	"compilerOptions": {
-		"target": "ES2015",
+  "compilerOptions": {
+    "target": "ES2019",
     "module": "commonjs",
     "outDir": "out",
     "baseUrl": "src/",
@@ -8,15 +8,16 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "downlevelIteration": true,
-    "types": ["@types/node"],
+    "types": ["@types/node", "@types/ts-expose-internals"],
     "paths": {
-      "shared/*": ["shared/*"],
-      "transform/*": ["transform/*"],
+      "@transformer/shared/*": ["shared/*"],
+      "@transformer/main/*": ["transform/*"],
+      "@transformer/viewers/*": ["viewers/*"]
     },
     "plugins": [
       {
         "transform": "typescript-transform-paths",
-				"exclude": ["**/node_modules/**"]
+        "exclude": ["**/node_modules/**"]
       }
     ]
   },

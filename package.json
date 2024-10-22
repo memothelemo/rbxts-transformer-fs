@@ -1,17 +1,14 @@
 {
   "name": "rbxts-transformer-fs",
   "version": "2.0.0-alpha.0",
-  "main": "out/index.js",
+  "main": "out/preload.js",
   "typings": "index.d.ts",
   "author": "memothelemo",
   "license": "MIT",
   "scripts": {
-    "build": "ttsc -b",
-    "dev": "ttsc -b -w",
-    "link:prepare": "npm link",
-    "link:test": "cd test && npm link rbxts-transformer-fs",
-    "prepack": "yarn build",
-    "setup": "yarn link:prepare && yarn link:test && yarn build"
+    "build": "tspc -b",
+    "dev": "tspc -b -w",
+    "prepack": "bun run build"
   },
   "repository": {
     "type": "git",
@@ -21,22 +18,22 @@
     "url": "https://github.com/memothelemo/rbxts-transformer-fs/issues"
   },
   "devDependencies": {
-    "@types/node": "^20.3.3",
+    "@types/node": "^20.14.1",
+    "@types/ts-expose-internals": "npm:ts-expose-internals@=5.4.2",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.8",
-    "ts-expose-internals": "^4.9.4",
-    "ttypescript": "^1.5.15",
+    "ts-patch": "^3.2.1",
     "typescript-transform-paths": "^3.4.6"
   },
   "dependencies": {
-    "@rbxts/types": "^1.0.703",
-    "@roblox-ts/rojo-resolver": "^1.0.4",
+    "@rbxts/types": "^1.0.778",
+    "@roblox-ts/rojo-resolver": "^1.0.6",
     "chalk": "4.1.2",
-    "typescript": "^4.9.4",
+    "typescript": "=5.5.3",
     "zod": "^3.21.4",
     "zod-validation-error": "^1.3.1"
   }

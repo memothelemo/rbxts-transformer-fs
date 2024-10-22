@@ -1,14 +1,14 @@
-import { macros } from "transform/macros";
+import { macroFsUtils } from "../utils/filesystem";
 import { VariableMacro } from "../types";
-import { f } from "transform/factory";
 
 export const FileNameMacro: VariableMacro = {
-  getSymbols(symbols) {
-    return symbols.moduleFile.getFromExport("$FILE_NAME");
+  getSymbol(state) {
+    return state.symbol_provider.module_file.expect("$FILE_NAME");
   },
 
   transform(state, node) {
-    const path = state.project.relativeTo(node.getSourceFile().fileName);
-    return f.string(macros.utils.toEmittedPath(path));
+    const file_name = state.getSourceFileOfNode(node).fileName;
+    const relative_path = state.project.relative_path_to(file_name);
+    return macroFsUtils.buildFixedPathString(relative_path);
   },
 };

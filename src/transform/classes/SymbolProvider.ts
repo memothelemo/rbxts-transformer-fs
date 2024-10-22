@@ -1,82 +1,150 @@
+import { assert } from "@transformer/shared/util/assert";
+import Logger from "@transformer/shared/services/logger";
+import { Cache } from "@transformer/shared/cache";
+
+import fs from "fs";
 import path from "path";
-import { TransformState } from "./TransformState";
-import { PACKAGE_NAME } from "shared/constants";
-import { CacheService } from "shared/services/CacheService";
-import { Logger } from "shared/services/Logger";
-import { assert } from "shared/utils/assert";
-import { isPathDescendantOf } from "shared/utils/isPathDescendantOf";
 import ts from "typescript";
+import { TransformState } from "../state";
+import { PACKAGE_NAME } from "@transformer/shared/consts";
+import { isPathDescendantOf } from "@transformer/shared/util/isPathDescendantOf";
 
-class FileSymbol {
-  public symbol: ts.Symbol;
+export class SymbolProvider {
+  private rbxts_types_dir: string;
 
-  public constructor(private state: TransformState, public readonly file: ts.SourceFile) {
-    const symbol = state.getSymbol(file, true);
-    assert(symbol, `Failed to get symbol for ${state.project.relativeTo(file.fileName)}`);
+  private module_file_symbol?: FileSymbol;
+  private module_dir: string;
 
-    this.symbol = symbol;
+  public constructor(private state: TransformState) {
+    this.module_dir = this.resolveModulePath(PACKAGE_NAME);
+    this.rbxts_types_dir = this.resolveModulePath("@rbxts/types");
+
+    this.loadFileSymbols();
   }
 
-  public getFromExport(name: string) {
-    const symbol = this.symbol.exports?.get(name as ts.__String);
-    assert(symbol, `Failed to get export symbol for ${name} in ${this.state.project.relativeTo(this.file.fileName)}`);
-    return symbol;
+  public isFromRobloxTypes(symbol: ts.Symbol) {
+    console.log(symbol);
+    return false;
+  }
+
+  public get module_file() {
+    assert(this.module_file_symbol, "Transformer types file is not loaded");
+    return this.module_file_symbol;
+  }
+
+  public get isModuleFileLoaded() {
+    return this.module_file_symbol !== undefined;
+  }
+
+  private loadFileSymbols() {
+    for (const file of this.state.ts_program.getSourceFiles()) {
+      if (this.isTransformFile(file)) {
+        this.module_file_symbol = new FileSymbol(this.state, file);
+      }
+    }
+  }
+
+  private resolveModulePath(module: string) {
+    const module_path = Logger.benchmark("Resolving module path", () => {
+      Logger.debugValue("module", module);
+
+      const compiler_options = this.state.ts_program.getCompilerOptions();
+      const cached_module_path = Cache.module_resolution.get(module);
+      if (cached_module_path) {
+        Logger.debug("cache hit; reusing cached module path");
+        Logger.debugValue("cached_module_path", cached_module_path);
+        return cached_module_path || undefined;
+      }
+      Logger.debug("cache miss; resolving module path");
+
+      const dummy_file_path = path.join(this.state.project.source_dir, "dummy.ts");
+      const { resolvedModule: resolved_module } = ts.resolveModuleName(
+        module,
+        dummy_file_path,
+        compiler_options,
+        ts.sys,
+      );
+
+      if (!resolved_module) {
+        Cache.module_resolution.set(module, false);
+        return;
+      }
+
+      const resolved_path = fs.realpathSync(path.join(resolved_module.resolvedFileName, "../"));
+      Cache.module_resolution.set(module, resolved_path);
+
+      Logger.debug("found resolved module path");
+      Logger.debugValue("resolved_path", path.relative(process.cwd(), resolved_path));
+
+      return resolved_path;
+    });
+    assert(
+      module_path,
+      `Failed to resolve module: ${module}! Did you forget to install this package?`,
+    );
+    return module_path;
+  }
+
+  private isTransformFile(file: ts.SourceFile) {
+    return (
+      isPathDescendantOf(file.fileName, this.module_dir) &&
+      !isPathDescendantOf(file.fileName, path.join(this.module_dir, "node_modules"))
+    );
   }
 }
 
-export class SymbolProvider {
-  private moduleDir: string;
-  private typesDir: string;
+class FileSymbol {
+  private symbol: ts.Symbol;
 
-  private _moduleFile?: FileSymbol;
+  public readonly instance: ModuleNamespaceSymbol;
+  public readonly find_instance: ModuleNamespaceSymbol;
+  public readonly wait_for_instance: ModuleNamespaceSymbol;
 
-  public constructor(public state: TransformState) {
-    // Transformer module
-    this.moduleDir = this.resolveModuleDirOrThrow(PACKAGE_NAME);
-    this.typesDir = this.resolveModuleDirOrThrow("@rbxts/types");
+  public readonly instances: ModuleNamespaceSymbol;
+  public readonly wait_for_instances: ModuleNamespaceSymbol;
 
-    this.lookupActiveFiles();
+  public constructor(private state: TransformState, public readonly file: ts.SourceFile) {
+    const symbol = this.state.getSymbol(file);
+    assert(symbol, `Could not get file symbol for ${file.fileName}`);
+    this.symbol = symbol;
+
+    this.instance = new ModuleNamespaceSymbol(this, "$instance");
+    this.find_instance = new ModuleNamespaceSymbol(this, "$findInstance");
+    this.wait_for_instance = new ModuleNamespaceSymbol(this, "$waitForInstance");
+    this.instances = new ModuleNamespaceSymbol(this, "$instances");
+    this.wait_for_instances = new ModuleNamespaceSymbol(this, "$waitForInstances");
   }
 
-  public isModuleFileLoaded() {
-    return this._moduleFile !== undefined;
+  public get(name: string) {
+    const export_symbol = this.symbol.exports?.get(name as ts.__String);
+    return export_symbol;
   }
 
-  public get moduleFile() {
-    assert(this._moduleFile, "Module file is not loaded");
-    return this._moduleFile;
+  public expect(name: string) {
+    const export_symbol = this.symbol.exports?.get(name as ts.__String);
+    assert(export_symbol, `Could not get "${name}" from ${this.file.fileName}`);
+    return export_symbol;
+  }
+}
+
+// $instances related function handler
+class ModuleNamespaceSymbol {
+  public readonly namespace_symbol: ts.Symbol;
+  public readonly call_symbol = this.file_symbol.expect(this.name);
+  public readonly exact_call_symbol: ts.Symbol;
+
+  public constructor(private readonly file_symbol: FileSymbol, private readonly name: string) {
+    const symbol = file_symbol.expect(name);
+    this.namespace_symbol = symbol;
+    this.exact_call_symbol = this.expect("exact");
   }
 
-  private lookupActiveFiles() {
-    for (const file of this.state.program.getSourceFiles()) {
-      if (this.isModuleFile(file)) {
-        Logger.debug(`Module file is being referenced, path = ${this.state.project.relativeTo(file.fileName)}`);
-        if (this._moduleFile) {
-          const path = this.state.project.relativeTo(this._moduleFile.file.fileName);
-          const message = `Module file is already initialized, lastFile.path = ${path}`;
-          assert(false, message);
-        }
-        this._moduleFile = new FileSymbol(this.state, file);
-      }
-    }
-
-    if (!this._moduleFile) {
-      Logger.debug("Module file is not referenced");
-    }
-  }
-
-  private resolveModuleDirOrThrow(name: string) {
-    const directory = CacheService.resolveModuleDir(name, this.state.project.sourceDir, this.state.compilerOptions);
-    assert(directory, `Failed to resolve module: ${name}. Do you forget to install this package?`);
-    return directory;
-  }
-
-  private isModuleFile(file: ts.SourceFile) {
-    // bug fix from the dev environment in rbxts-transformer-fs
-    return (
-      isPathDescendantOf(file.fileName, this.moduleDir) &&
-      !isPathDescendantOf(file.fileName, path.join(this.moduleDir, "test")) &&
-      !isPathDescendantOf(file.fileName, path.join(this.moduleDir, "node_modules"))
+  public expect(name: string) {
+    const export_symbol = this.namespace_symbol.exports?.get(name as ts.__String);
+    assert(
+      export_symbol,
+      `Could not get "${this.name}.${name}" from ${this.file_symbol.file.fileName}`,
     );
+    return export_symbol;
   }
 }

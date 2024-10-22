@@ -1,25 +1,29 @@
-import { TransformState } from "transform/classes/TransformState";
-import { macros } from "transform/macros";
-import { VariableAccessExpression } from "transform/macros/types";
-import ts from "typescript";
-import { transformChildren } from "../transformChildren";
+import { VariableAccessExpression } from "@transformer/main/macros/types";
+import { transformMacro } from "@transformer/main/macros";
+import { TransformState } from "@transformer/main/state";
 
-export function transformVariableAccessExpression(state: TransformState, node: VariableAccessExpression) {
+import ts from "typescript";
+import { transformNode } from "../transformNode";
+
+export function transformVariableAccessExpression(
+  state: TransformState,
+  node: VariableAccessExpression,
+): ts.Expression {
   let accessor: ts.Expression = node;
   if (ts.isPropertyAccessExpression(node)) {
     accessor = node.name;
   } else if (ts.isElementAccessExpression(node)) {
     accessor = node.argumentExpression;
   } else if (node.parent.kind === ts.SyntaxKind.ImportSpecifier) {
-    // Bug fix
+    // TODO: check even further with this condition
     return node;
   }
 
   const symbol = state.getSymbol(accessor, true);
   if (symbol) {
-    const macro = state.macros.getVariableMacro(symbol);
-    if (macro) return macros.transform(state, node, macro);
+    const macro = state.macro_manager.getVariableMacro(symbol);
+    if (macro) return transformMacro(state, macro, node, symbol);
   }
 
-  return transformChildren(state, node);
+  return ts.visitEachChild(node, new_node => transformNode(state, new_node), state.ts_context);
 }

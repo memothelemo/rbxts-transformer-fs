@@ -1,95 +1,134 @@
 import chalk from "chalk";
-import { PACKAGE_NAME } from "shared/constants";
+import { TransformConfig } from "../config";
+import { PACKAGE_NAME } from "../consts";
+import { inspect } from "util";
 
-const TRANSFORMER_NAME_COLORED = PACKAGE_NAME;
+const NAME_COLORED = PACKAGE_NAME;
 
-const DEBUG_CODE = `[${chalk.cyan("DEBUG")} ${TRANSFORMER_NAME_COLORED}]`;
-const WARN_CODE = `[${chalk.yellow("WARN ")} ${TRANSFORMER_NAME_COLORED}]`;
-const TRACE_CODE = `[${chalk.magenta("TRACE")} ${TRANSFORMER_NAME_COLORED}]`;
-const ERROR_CODE = `[${chalk.red("ERROR")} ${TRANSFORMER_NAME_COLORED}]`;
+const OPEN_BRACKET_COLORED = chalk.gray("[");
+const CLOSE_BRACKET_COLORED = chalk.gray("]");
 
+const DEBUG_MARKER = `${OPEN_BRACKET_COLORED}${chalk.bold.cyan(
+  "DEBUG",
+)} ${NAME_COLORED}${CLOSE_BRACKET_COLORED}`;
+const WARN_MARKER = `${OPEN_BRACKET_COLORED}${chalk.bold.yellow(
+  "WARN ",
+)} ${NAME_COLORED}${CLOSE_BRACKET_COLORED}`;
+const TRACE_MARKER = `${OPEN_BRACKET_COLORED}${chalk.bold.magenta(
+  "TRACE",
+)} ${NAME_COLORED}${CLOSE_BRACKET_COLORED}`;
+const ERROR_MARKER = `${OPEN_BRACKET_COLORED}${chalk.bold.red(
+  "ERROR",
+)} ${NAME_COLORED}${CLOSE_BRACKET_COLORED}`;
 const TREE_MARKER = chalk.gray("   │");
 
-export class Logger {
-  public static treeStackLength = 0;
+namespace Logger {
+  export function configure(config: TransformConfig | undefined) {
+    if (config !== undefined) log_debug = config.debug;
 
-  private static writeRaw(message: string) {
-    process.stdout.write(message);
+    // roblox-ts uses `process.stdout.write` to emit output text instead of
+    // using console.log in https://github.com/roblox-ts/roblox-ts/blob/371f97cd0391dfee7b4c62ca09a1e5ec03ffee4c/src/Shared/classes/LogService.ts#L9.
+    //
+    // If `--verbose` flag is enabled by the user, it will perform some benchmarks
+    // on how much long it takes to complete each step thus.
+    //
+    // Since we're dealing with transformers in this repository, roblox-ts emit `Running transformers...`
+    // without a new line character (enter key) to monitor how long is to for all
+    // configured transformers to transform TypeScript files (shown in this code:
+    // https://github.com/roblox-ts/roblox-ts/blob/371f97cd0391dfee7b4c62ca09a1e5ec03ffee4c/src/Shared/util/benchmark.ts#L4
+    // and https://github.com/roblox-ts/roblox-ts/blob/371f97cd0391dfee7b4c62ca09a1e5ec03ffee4c/src/Project/functions/compileFiles.ts#L110)
+    //
+    // We're putting a new line character (or enter key to begin with a new line) to avoid
+    // colliding with the `Running transformers...` text.
+    if (log_trace) process.stdout.write("\n");
   }
 
-  private static toMessage(message: unknown) {
-    return typeof message === "string" ? message : JSON.stringify(message, undefined, "  ");
+  export function getTreeStack() {
+    return tree_stack;
   }
 
-  private static constructTreeMarker() {
-    return TREE_MARKER.repeat(this.treeStackLength);
+  export function resetTreeStack(override?: number) {
+    if (log_debug) tree_stack = override ?? 0;
   }
 
-  private static writeLine(prefix: string, messages: unknown[]) {
-    const treeMarker = this.constructTreeMarker();
-    for (const message of messages) {
-      const text = this.toMessage(message);
-      this.writeRaw(`${prefix}${treeMarker} ${text.replace(/\n/g, `\n${prefix}${treeMarker} `)}\n`);
-    }
-  }
+  export function benchmark<T>(task: string | (() => string), callback: () => T): T {
+    if (!log_debug) return callback();
 
-  public static debugMode = false;
-  public static canPrintTrace = false;
-
-  /**
-   * This should be ran in transformer's main function
-   */
-  public static setup(debugMode: boolean, verbose: boolean) {
-    this.debugMode = debugMode;
-    this.canPrintTrace = verbose;
-    if (this.canPrintTrace) this.writeRaw("\n");
-  }
-
-  public static pushTreeWith<T>(callback: () => T) {
-    if (!this.debugMode) return callback();
-    this.pushTree();
-    const result = callback();
-    this.popTree();
-    return result;
-  }
-
-  public static pushTree() {
-    if (!this.debugMode) return;
-    this.treeStackLength += 1;
-  }
-
-  public static popTree() {
-    if (!this.debugMode) return;
-    if (this.treeStackLength !== 0) this.treeStackLength -= 1;
-  }
-
-  public static debug(...messages: unknown[]) {
-    if (this.debugMode) this.writeLine(DEBUG_CODE, messages);
-  }
-
-  public static trace(...messages: unknown[]) {
-    if (this.canPrintTrace) this.writeLine(TRACE_CODE, messages);
-  }
-
-  public static warn(...messages: unknown[]) {
-    this.writeLine(WARN_CODE, messages);
-  }
-
-  public static error(...messages: unknown[]) {
-    this.writeLine(ERROR_CODE, messages);
-  }
-
-  public static benchmark<T>(message: string, push: boolean, callback: () => T) {
-    Logger.debug(message);
-    if (push) Logger.pushTree();
+    const resolved_task_name = resolve_value(task);
+    debug(chalk.gray(`${resolved_task_name}...`));
+    pushTree();
 
     const now = Date.now();
     const result = callback();
     const elapsed = Date.now() - now;
+    popTree();
 
-    Logger.debug(chalk.gray(`elapsed = ${elapsed} ms`));
-    if (push) Logger.popTree();
+    debug(`${chalk.gray(`${resolved_task_name} done;`)} took = ${elapsed} ms`);
+    return result;
+  }
+
+  export function pushTreeWithin<T>(context: string, callback: () => T): T;
+  export function pushTreeWithin<T>(context: string, callback: () => T, use_trace: boolean): T;
+  export function pushTreeWithin<T>(context: string, callback: () => T, use_trace?: boolean): T {
+    const use_debug = use_trace === null || use_trace !== false;
+    const can_log_this = use_debug ? log_debug : log_trace;
+    if (!can_log_this) return callback();
+
+    const log = use_debug ? debug : trace;
+    log(chalk.gray(`Start of "${context}"`));
+    pushTree();
+
+    const result = callback();
+    popTree();
+    log(chalk.gray(`End of "${context}"`));
 
     return result;
   }
+
+  export function debug(...messages: unknown[]) {
+    if (log_debug) log(DEBUG_MARKER, messages);
+  }
+
+  export function debugValue(name: string, value: unknown) {
+    if (log_debug) log(DEBUG_MARKER, [`${chalk.bold(`${name}:`)} ${resolve_value(value)}`]);
+  }
+
+  export function trace(...messages: unknown[]) {
+    if (log_trace) log(TRACE_MARKER, messages);
+  }
+
+  export const warn = (...messages: unknown[]) => log(WARN_MARKER, messages);
+  export const error = (...messages: unknown[]) => log(ERROR_MARKER, messages);
+
+  const log_trace = process.argv.includes("--verbose");
+  let log_debug = false;
+  let tree_stack = 0;
+
+  function resolve_value(message: unknown): string {
+    return typeof message === "string"
+      ? message
+      : typeof message === "function"
+      ? resolve_value(message())
+      : inspect(message, true);
+  }
+
+  function log(prefix: string, messages: unknown[]) {
+    const tree_marker = TREE_MARKER.repeat(tree_stack);
+    for (const message of messages) {
+      const text = resolve_value(message);
+      process.stdout.write(
+        `${prefix}${tree_marker} ${text.replace(/\n/g, `\n${prefix}${tree_marker} `)}\n`,
+      );
+    }
+  }
+
+  export function pushTree() {
+    if (log_debug) tree_stack += 1;
+  }
+
+  export function popTree() {
+    if (log_debug) tree_stack -= 1;
+  }
 }
+
+export default Logger;
