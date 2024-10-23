@@ -1,13 +1,13 @@
 type Required<T> = {
-  [K in keyof T]-?: T[K];
+    [K in keyof T]-?: T[K];
 };
 
 type Writable<T extends object> = {
-  -readonly [K in keyof T]: T[K];
+    -readonly [K in keyof T]: T[K];
 };
 
 declare namespace require {
-  function resolve(request: string, options: { paths: string[] });
+    function resolve(request: string, options: { paths: string[] });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

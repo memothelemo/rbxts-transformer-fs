@@ -10,9 +10,8 @@
     "downlevelIteration": true,
     "types": ["@types/node", "@types/ts-expose-internals"],
     "paths": {
-      "@transformer/shared/*": ["shared/*"],
-      "@transformer/main/*": ["transform/*"],
-      "@transformer/viewers/*": ["viewers/*"]
+      "@shared/*": ["shared/*"],
+      "@transform/*": ["transform/*"],
     },
     "plugins": [
       {
