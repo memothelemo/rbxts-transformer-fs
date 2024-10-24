@@ -14,6 +14,7 @@ export function prereqFromType(
     diagnosticNode: ts.Node,
     type: ts.Type,
     sourcePath: string,
+    optional: boolean,
 ): ts.Identifier {
     const result = f.identifier("_instance", true);
 
@@ -26,7 +27,7 @@ export function prereqFromType(
         guard,
         true,
         undefined,
-        buildFromType(state, diagnosticNode, type),
+        buildFromType(state, diagnosticNode, type, optional),
     );
     state.prereq(guardDeclareStmt);
 
@@ -44,11 +45,22 @@ export function prereqFromType(
     return result;
 }
 
-export function buildFromType(state: State, node: ts.Node, type: ts.Type) {
+export function buildFromType(
+    state: State,
+    node: ts.Node,
+    type: ts.Type,
+    forceOptional = false,
+): ts.Expression {
     const file = state.getSourceFileOfNode(node);
     const tracking = new Array<[ts.Node, ts.Type]>();
 
-    return buildGuard(type);
+    const tId = state.addFileImport(file, "@rbxts/t", "t");
+    let guard = buildGuard(type);
+
+    if (forceOptional)
+        guard = f.call(f.field(tId, f.identifier("optional"), false), undefined, [guard]);
+
+    return guard;
 
     function fail(err: string): never {
         const basicDiagnostic = Diagnostics.createDiagnostic(
@@ -253,12 +265,11 @@ function extractTypes(
     typeChecker: ts.TypeChecker,
     types: ts.Type[],
 ): [isOptional: boolean, types: ts.Type[]] {
-    const undefinedtype = typeChecker.getUndefinedType();
+    const undefinedType = typeChecker.getUndefinedType();
     const voidType = typeChecker.getVoidType();
-
     return [
-        types.some(type => type === undefinedtype || type === voidType),
-        types.filter(type => type !== undefinedtype && type !== voidType),
+        types.some(type => type === undefinedType || type === voidType),
+        types.filter(type => type !== undefinedType && type !== voidType),
     ];
 }
 

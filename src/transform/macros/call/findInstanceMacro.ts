@@ -71,6 +71,7 @@ export const FindInstanceMacro: CallMacroDefinition = {
                 firstTypeArg,
                 customGuardType,
                 MacroIntrinsics.fixPath(state.project.relativeFromDir(resolvedPath)),
+                true,
             );
         }
 

@@ -317,6 +317,10 @@ export namespace f {
             return ts.isNamedImports(node);
         }
 
+        export function number(expr: ts.Expression): expr is ts.NumericLiteral {
+            return ts.isNumericLiteral(expr);
+        }
+
         export function string(expr: ts.Expression): expr is ts.StringLiteralLike {
             return ts.isStringLiteralLike(expr);
         }

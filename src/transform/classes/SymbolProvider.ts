@@ -60,14 +60,24 @@ export class SymbolProvider {
     }
 
     private resolveModulePath(module: string) {
-        const path = Logger.benchmark("Resolving module path", () => {
-            Logger.value("module", module);
+        const callback = () => {
             return Cache.resolveModuleDir(
                 this.state.project.directory,
                 this.state.tsProgram.getCompilerOptions(),
                 module,
             );
-        });
+        };
+
+        let path: string | undefined;
+        if (this.state.config.$internal.logModuleResolution === true) {
+            path = Logger.benchmark("Resolving module path", () => {
+                Logger.value("module", module);
+                return callback();
+            });
+        } else {
+            path = callback();
+        }
+
         assert(
             path,
             `Failed to resolve module: ${module}. Did you forget to install this package?`,

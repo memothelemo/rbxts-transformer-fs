@@ -63,7 +63,7 @@ export namespace roblox {
         sourceNode: ts.Node,
         targetPath: string,
         useItsExactPath: boolean,
-    ) {
+    ): ResolvedRbxPath {
         if (!state.project.rojo.isGame) {
             Diagnostics.error(
                 sourceNode,
@@ -81,6 +81,12 @@ export namespace roblox {
         // strip any excess extnames that Rojo supports
         const targetOutputPath = stripFileExts(pathTranslator.getOutputPath(targetPath));
         Logger.value("target.outputPath", () => state.project.relativeFromDir(targetOutputPath));
+
+        // use script if we're referencing the same file used in the source
+        const isReferencingSourceScript = compiledSourcePath === targetOutputPath;
+        if (isReferencingSourceScript) {
+            return [ScriptMarker];
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         const sourceRbxPath = rojo.getRbxPathFromFilePath(compiledSourcePath);
@@ -138,11 +144,9 @@ export namespace roblox {
         }
 
         // Finally, add script before the rest of elements (if applicable in shouldAddScript)
-        const isReferencingSourceScript = compiledSourcePath === targetOutputPath;
-        const shouldAddScript =
-            relativePathToTarget.at(0) == RbxPathParent || isReferencingSourceScript;
-
+        const shouldAddScript = relativePathToTarget.at(0) == RbxPathParent;
         if (shouldAddScript) (relativePathToTarget as unknown[]).unshift(ScriptMarker);
+
         Logger.value("target.relativeRbxPath", relativePathToTarget);
         return relativePathToTarget as ResolvedRbxPath;
     }
