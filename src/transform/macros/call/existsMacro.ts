@@ -20,11 +20,9 @@ export const ExistsMacro: CallMacroDefinition = {
         if (!f.is.string(firstArg)) Diagnostics.error(firstArg ?? node, "Expected string");
 
         const resolvedPath = MacroIntrinsics.resolvePath(state, node, firstArg.text);
-        Logger.value("resolvedPath", () => state.project.relativeFromDir(resolvedPath));
+        Logger.value("args.path", () => state.project.relativeFromDir(resolvedPath));
 
-        const fileSymbol = loadedSymbols[0];
-        const dirSymbol = loadedSymbols[1];
-        const pathSymbol = loadedSymbols[2];
+        const [fileSymbol, dirSymbol, pathSymbol] = loadedSymbols;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         let checker = (_path: string) => true;

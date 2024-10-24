@@ -6,7 +6,13 @@ import Logger from "@shared/services/logger";
 import { Config } from "./config";
 import { MacroManager } from "./classes/MacroManager";
 import { SymbolProvider } from "./classes/SymbolProvider";
+import { transformNode } from "./nodes/transformNode";
 import { f } from "./factory";
+
+interface ImportInfo {
+    path: string;
+    entries: { name: string; identifier: ts.Identifier }[];
+}
 
 export class State {
     public readonly macroManager: MacroManager;
@@ -36,10 +42,69 @@ export class State {
         this.macroManager = macroManager;
     }
 
+    public commentNode(node: ts.Node, message: string) {
+        // if the message has 2 two lines, then better use multline
+        let useMultiline = false;
+        if (message.split("\n").length > 1) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            useMultiline = true;
+        }
+        ts.addSyntheticLeadingComment(
+            node,
+            useMultiline
+                ? ts.SyntaxKind.MultiLineCommentTrivia
+                : ts.SyntaxKind.SingleLineCommentTrivia,
+            message,
+            true,
+        );
+    }
+
+    public fileImports = new Map<string, ImportInfo[]>();
+
+    public addFileImport(file: ts.SourceFile, importPath: string, name: string) {
+        let importInfos = this.fileImports.get(file.fileName);
+        if (!importInfos) this.fileImports.set(file.fileName, (importInfos = []));
+
+        let importInfo = importInfos.find(v => v.path === importPath);
+        if (!importInfo) importInfos.push((importInfo = { path: importPath, entries: [] }));
+
+        let identifier = importInfo.entries.find(x => x.name === name)?.identifier;
+        if (!identifier) {
+            start: for (const statement of file.statements) {
+                if (!f.is.importDeclaration(statement)) continue;
+                if (!f.is.string(statement.moduleSpecifier)) continue;
+                if (!statement.importClause || !f.is.importClause(statement.importClause)) continue;
+                if (
+                    !statement.importClause.namedBindings ||
+                    !f.is.namedImports(statement.importClause.namedBindings)
+                )
+                    continue;
+                if (statement.moduleSpecifier.text !== importPath) continue;
+
+                for (const element of statement.importClause.namedBindings.elements) {
+                    if (element.propertyName) {
+                        if (element.propertyName.text === name) {
+                            identifier = element.name;
+                            break start;
+                        }
+                    } else if (element.name.text === name) {
+                        identifier = element.name;
+                        break start;
+                    }
+                }
+            }
+        }
+        if (!identifier) {
+            importInfo.entries.push({ name, identifier: (identifier = f.identifier(name, true)) });
+        }
+        return identifier!;
+    }
+
     public canTransformFiles() {
         return this.symbolProvider.isModuleLoaded();
     }
 
+    private _hasTransformErrors = false;
     public get hasTransformErrors() {
         return this._hasTransformErrors;
     }
@@ -82,5 +147,30 @@ export class State {
         }
     }
 
-    private _hasTransformErrors = false;
+    public transformChildrenOfNode<T extends ts.Node>(node: T): T {
+        return ts.visitEachChild(node, newNode => transformNode(this, newNode), this.tsContext);
+    }
+
+    private prereqStack = new Array<Array<ts.Statement>>();
+
+    public capture<T>(cb: () => T): [T, ts.Statement[]] {
+        this.prereqStack.push([]);
+
+        const result = cb();
+        return [result, this.prereqStack.pop()!];
+    }
+
+    public prereq(statement: ts.Statement) {
+        const stack = this.prereqStack[this.prereqStack.length - 1];
+        if (stack) stack.push(statement);
+    }
+
+    public prereqList(statements: ts.Statement[]) {
+        const stack = this.prereqStack[this.prereqStack.length - 1];
+        if (stack) stack.push(...statements);
+    }
+
+    public isCapturing(threshold = 1) {
+        return this.prereqStack.length > threshold;
+    }
 }

@@ -20,7 +20,7 @@ export interface CallMacroDefinition extends MacroDefinition {
     ): ts.Expression;
 }
 
-export interface StatementCallMacro extends CallMacroDefinition {
+export interface StatementCallMacroDefinition extends CallMacroDefinition {
     transform(
         state: State,
         node: ts.CallExpression,
@@ -34,6 +34,6 @@ export type VariableAccessExpression =
     | ts.PropertyAccessExpression
     | ts.ElementAccessExpression;
 
-export interface VariableMacro extends MacroDefinition {
-    transform(state: State, node: ts.CallExpression, sourceS: ts.Symbol): ts.Expression;
+export interface VariableMacroDefinition extends MacroDefinition {
+    transform(state: State, node: VariableAccessExpression, sourceSymbol: ts.Symbol): ts.Expression;
 }

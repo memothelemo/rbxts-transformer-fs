@@ -2,6 +2,10 @@ import fs from "fs";
 import path from "path";
 import ts from "typescript";
 import { State } from "@transform/state";
+import Diagnostics from "@shared/services/diagnostics";
+import Logger from "@shared/services/logger";
+import { humanifyFileSize } from "@shared/util/humanifyFileSize";
+import { PACKAGE_NAME } from "@shared/constants";
 
 export function isPathExists(path: string) {
     return fs.existsSync(path);
@@ -13,6 +17,44 @@ export function isDirectory(path: string) {
 
 export function isFile(path: string) {
     return fs.existsSync(path) && fs.statSync(path).isFile();
+}
+
+export function fixPath(raw: string) {
+    // Windows path system is a bit weird...
+    if (path.sep === "\\") raw = raw.replace(/\\/g, "/");
+    return raw;
+}
+
+export function checkOrThrowFiieSize(
+    state: State,
+    path: string,
+    sizeLimit: number,
+    category: string,
+    configProperty: string,
+    sourceNode: ts.Node,
+) {
+    let fileSize = 0;
+    try {
+        fileSize = fs.statSync(path).size;
+    } catch (_) {
+        Diagnostics.error(sourceNode, "Could not find specified file");
+    }
+
+    Logger.debug("checking file size...");
+    Logger.value("category", category);
+    Logger.value("category.limit", humanifyFileSize(sizeLimit));
+    Logger.value("args.path", () => state.project.relativeFromDir(path));
+    Logger.value("args.path.fileSize", humanifyFileSize(fileSize));
+
+    if (fileSize <= sizeLimit) return;
+    Diagnostics.error(
+        sourceNode,
+        `This file reached the ${category} file size limit! (${humanifyFileSize(
+            fileSize,
+        )} > ${humanifyFileSize(sizeLimit)})`,
+        `If you want to increase the ${category} file size, set "${configProperty}" to bigger amount in bytes.`,
+        `in tsconfig.json file inside the where you configured for ${PACKAGE_NAME}.`,
+    );
 }
 
 export function resolvePath(state: State, node: ts.Node, value: string) {

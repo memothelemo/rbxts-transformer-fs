@@ -10,7 +10,6 @@ export function $expectFile(path: string, message?: string): void;
 export function $expectDir(path: string, message?: string): void;
 export function $expectPath(path: string, message?: string): void;
 
-/** @deprecated don't use this */
 export function $dirExists(path: string): boolean;
 export function $fileExists(path: string): boolean;
 export function $pathExists(path: string): boolean;

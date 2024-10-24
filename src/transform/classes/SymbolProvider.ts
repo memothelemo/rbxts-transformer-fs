@@ -9,11 +9,13 @@ import path from "path";
 import ts from "typescript";
 
 export class SymbolProvider {
+    public rbxtsTypeDir: string;
     public instanceSymbol: ts.Symbol;
 
     public constructor(private state: State) {
         this.moduleDir = this.resolveModulePath(PACKAGE_NAME);
-        this.resolveModulePath("@rbxts/types");
+        this.rbxtsTypeDir = this.resolveModulePath("@rbxts/types");
+        this.resolveModulePath("@rbxts/t");
 
         for (const file of this.state.tsProgram.getSourceFiles()) {
             if (this.isTransformFile(file)) {
@@ -66,7 +68,10 @@ export class SymbolProvider {
                 module,
             );
         });
-        assert(path, `Failed to resolve module: ${path}. Did you forget to install this package?`);
+        assert(
+            path,
+            `Failed to resolve module: ${module}. Did you forget to install this package?`,
+        );
         return path;
     }
 }

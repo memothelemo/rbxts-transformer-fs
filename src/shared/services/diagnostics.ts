@@ -1,5 +1,8 @@
 import { PACKAGE_NAME } from "@shared/constants";
 import ts from "typescript";
+import Logger from "./logger";
+import { sanitizeInput } from "@shared/util/sanitizeInput";
+import chalk from "chalk";
 
 namespace Diagnostics {
     let storage = new Array<ts.DiagnosticWithLocation>();
@@ -37,6 +40,28 @@ namespace Diagnostics {
         const dump = storage;
         storage = [];
         return dump;
+    }
+
+    export function capture<T>(fallback: T, callback: () => T): T {
+        const lastTreeStack = Logger.getDepth();
+        try {
+            return callback();
+        } catch (error) {
+            if (error instanceof DiagnosticError) {
+                Logger.resetDepth(lastTreeStack);
+                Logger.push(chalk.yellow("Caught diagnostic error!"));
+                Logger.value("diagnostic.message", () =>
+                    sanitizeInput(error.diagnostic.messageText.toString()),
+                );
+                Logger.value("diagnostic.path", error.diagnostic.file.path);
+                Logger.value("diagnostic.kind", ts.DiagnosticCategory[error.diagnostic.category]);
+                Logger.pop();
+
+                addDiagnostic(error.diagnostic);
+                return fallback;
+            }
+            throw error;
+        }
     }
 }
 

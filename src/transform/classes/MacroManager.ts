@@ -1,8 +1,14 @@
 import Logger from "@shared/services/logger";
 import { assert } from "@shared/util/assert";
 import { sanitizeInput } from "@shared/util/sanitizeInput";
-import { CALL_MACROS } from "@transform/macros/call";
-import { CallMacroDefinition, MacroDefinition } from "@transform/macros/types";
+import { CALL_MACROS, STATEMENT_CALL_MACROS } from "@transform/macros/call";
+import { VARIABLE_MACROS } from "@transform/macros/variable";
+import {
+    CallMacroDefinition,
+    MacroDefinition,
+    StatementCallMacroDefinition,
+    VariableMacroDefinition,
+} from "@transform/macros/types";
 import { State } from "@transform/state";
 import ts from "typescript";
 
@@ -12,22 +18,31 @@ export type LoadedMacro<T extends MacroDefinition = MacroDefinition> = {
 } & T;
 
 export class MacroManager {
-    private callMacros = new Map<ts.Symbol, LoadedMacro<CallMacroDefinition>>();
-
     public constructor(private state: State) {
         // Don't try to load macros if SymbolProvider hasn't loaded symbols
         // from `index.d.ts` otherwise we will get a crash.
         if (!state.symbolProvider.isModuleLoaded()) return;
 
         for (const macro of CALL_MACROS) this.setupMacros(macro, this.callMacros);
+        for (const macro of VARIABLE_MACROS) this.setupMacros(macro, this.variableMacros);
+        for (const macro of STATEMENT_CALL_MACROS)
+            this.setupMacros(macro, this.statementCallMacros);
     }
 
     public get loadedMacros() {
-        return this.callMacros.size;
+        return this.callMacros.size + this.variableMacros.size;
+    }
+
+    public getStatementCallMacro(symbol: ts.Symbol) {
+        return this.statementCallMacros.get(symbol);
     }
 
     public getCallMacro(symbol: ts.Symbol) {
         return this.callMacros.get(symbol);
+    }
+
+    public getVariableMacro(symbol: ts.Symbol) {
+        return this.variableMacros.get(symbol);
     }
 
     public setupMacros<T extends MacroDefinition>(
@@ -76,4 +91,8 @@ export class MacroManager {
             }
         }
     }
+
+    private statementCallMacros = new Map<ts.Symbol, LoadedMacro<StatementCallMacroDefinition>>();
+    private callMacros = new Map<ts.Symbol, LoadedMacro<CallMacroDefinition>>();
+    private variableMacros = new Map<ts.Symbol, LoadedMacro<VariableMacroDefinition>>();
 }

@@ -53,6 +53,7 @@ function transformSourceFile(state: FsTransformer.State, file: ts.SourceFile) {
         return file;
     }
 
+    file = FsTransformer.transformFile(state, file);
     if (state.config.dumpTransformedFiles) {
         dumpOutputFile(state, file);
     }

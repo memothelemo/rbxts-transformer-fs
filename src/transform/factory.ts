@@ -19,6 +19,37 @@ export namespace f {
                 ),
             );
         }
+
+        export function importDeclaration(
+            path: string | ts.StringLiteral,
+            imports?: (ts.Identifier | [string | ts.Identifier, ts.Identifier])[],
+            defaultImport?: ts.Identifier,
+            typeOnly = false,
+        ) {
+            return factory.createImportDeclaration(
+                undefined,
+                factory.createImportClause(
+                    typeOnly,
+                    defaultImport,
+                    imports
+                        ? factory.createNamedImports(
+                              imports.map(x => {
+                                  if (Array.isArray(x)) {
+                                      return factory.createImportSpecifier(
+                                          false,
+                                          typeof x[0] === "string" ? f.identifier(x[0]) : x[0],
+                                          x[1],
+                                      );
+                                  } else {
+                                      return factory.createImportSpecifier(false, undefined, x);
+                                  }
+                              }),
+                          )
+                        : undefined,
+                ),
+                toExpression(path),
+            );
+        }
     }
 
     export type ConvertableExpression =
@@ -190,6 +221,33 @@ export namespace f {
         }
     }
 
+    export function object(
+        properties:
+            | readonly ts.ObjectLiteralElementLike[]
+            | { [key: string]: ConvertableExpression | Array<ConvertableExpression> },
+        multiLine = true,
+    ) {
+        if (properties instanceof Array) {
+            return factory.createObjectLiteralExpression(properties, multiLine);
+        } else {
+            const realProperties: ts.ObjectLiteralElementLike[] = [];
+            for (const key of Object.keys(properties)) {
+                realProperties.push(propertyAssignmentDeclaration(key, properties[key]));
+            }
+            return factory.createObjectLiteralExpression(realProperties, multiLine);
+        }
+    }
+
+    export function propertyAssignmentDeclaration(
+        name: ts.PropertyName | string,
+        value: ConvertableExpression,
+    ) {
+        return factory.createPropertyAssignment(
+            typeof name === "string" ? string(name) : name,
+            toExpression(value),
+        );
+    }
+
     export namespace field {
         export function optional(
             name: ts.Expression | string,
@@ -239,13 +297,33 @@ export namespace f {
             return ts.isBooleanLiteral(expr);
         }
 
+        export function enumDeclaration(stmt: ts.Node): stmt is ts.EnumDeclaration {
+            return ts.isEnumDeclaration(stmt);
+        }
+
+        export function importDeclaration(stmt: ts.Statement): stmt is ts.ImportDeclaration {
+            return ts.isImportDeclaration(stmt);
+        }
+
+        export function namedDeclaration(node: ts.Node): node is ts.NamedDeclaration {
+            return ts.isNamedDeclaration(node);
+        }
+
+        export function importClause(node: ts.Node): node is ts.ImportClause {
+            return ts.isImportClause(node);
+        }
+
+        export function namedImports(node: ts.Node): node is ts.NamedImports {
+            return ts.isNamedImports(node);
+        }
+
         export function string(expr: ts.Expression): expr is ts.StringLiteralLike {
             return ts.isStringLiteralLike(expr);
         }
     }
 
     export namespace update {
-        export function source_file(
+        export function sourceFile(
             file: ts.SourceFile,
             statements: readonly ts.Statement[],
             isDeclarationFile = file.isDeclarationFile,

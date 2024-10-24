@@ -39,7 +39,6 @@ export const HashFileMacro: CallMacroDefinition = {
 
         const resolvedPath = MacroIntrinsics.resolvePath(state, node, firstArg.text);
         const algorithm = intoAlgorithmEnum(secondArg.text);
-        Logger.value("args.resolvedPath", () => state.project.relativeFromDir(resolvedPath));
         Logger.value("args.algorithm", () => sanitizeInput(algorithm ?? "<unknown>"));
 
         if (algorithm === undefined) {
@@ -48,6 +47,15 @@ export const HashFileMacro: CallMacroDefinition = {
                 `${PACKAGE_NAME} does not support this specific hash algorithm`,
             );
         }
+
+        MacroIntrinsics.checkOrThrowFiieSize(
+            state,
+            resolvedPath,
+            state.config.hashFileSizeLimit,
+            "hashing",
+            "hashFileSizeLimit",
+            firstArg,
+        );
 
         try {
             const fileSize = fs.statSync(resolvedPath).size;
