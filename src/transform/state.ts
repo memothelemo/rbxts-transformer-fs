@@ -42,21 +42,23 @@ export class State {
         this.macroManager = macroManager;
     }
 
-    public commentNode(node: ts.Node, message: string) {
+    public commentNode(node: ts.Node, message: string, trailling = false) {
         // if the message has 2 two lines, then better use multline
         let useMultiline = false;
         if (message.split("\n").length > 1) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             useMultiline = true;
         }
-        ts.addSyntheticLeadingComment(
-            node,
-            useMultiline
-                ? ts.SyntaxKind.MultiLineCommentTrivia
-                : ts.SyntaxKind.SingleLineCommentTrivia,
-            message,
-            true,
-        );
+
+        const kind = useMultiline
+            ? ts.SyntaxKind.MultiLineCommentTrivia
+            : ts.SyntaxKind.SingleLineCommentTrivia;
+
+        if (trailling) {
+            ts.addSyntheticTrailingComment(node, kind, message, true);
+        } else {
+            ts.addSyntheticLeadingComment(node, kind, message, true);
+        }
     }
 
     public fileImports = new Map<string, ImportInfo[]>();

@@ -2,8 +2,8 @@ import Diagnostics from "@shared/services/diagnostics";
 import Logger from "@shared/services/logger";
 import { f } from "@transform/factory";
 import fs from "fs";
+import MacroIntrinsics from "../intrinsics";
 import { CallMacroDefinition } from "../types";
-import MacroUtil from "../util";
 
 export const ReadFileMacro: CallMacroDefinition = {
     getSymbols(state) {
@@ -12,27 +12,26 @@ export const ReadFileMacro: CallMacroDefinition = {
     },
 
     transform(state, node) {
-        const firstArg = node.arguments.at(0);
+        const firstArg = node.arguments[0];
         if (!f.is.string(firstArg)) Diagnostics.error(firstArg ?? node, "Expected string");
 
         const secondArg = node.arguments.at(1);
         let optional = false;
 
-        if (secondArg) {
-            if (!f.is.bool(secondArg)) Diagnostics.error(secondArg, "Expected boolean");
+        if (secondArg !== undefined) {
+            if (!f.is.bool(secondArg)) Diagnostics.error(secondArg, "Expected bool");
             optional = f.value.bool(secondArg);
         }
 
-        const path = MacroUtil.resolvePath(state, node, f.value.string(firstArg));
-        Logger.value("args.path", () => state.project.relativeFromDir(path));
+        const path = MacroIntrinsics.resolvePath(state, node, f.value.string(firstArg));
         Logger.value("args.optional", optional);
 
-        if (!MacroUtil.isFile(path)) {
+        if (!MacroIntrinsics.isFile(path)) {
             if (optional) return f.nil();
             Diagnostics.error(firstArg, "Cannot find specified file");
         }
 
-        MacroUtil.getOrThrowFileSize(
+        MacroIntrinsics.checkOrThrowFiieSize(
             state,
             path,
             state.config.readFileSizeLimit,

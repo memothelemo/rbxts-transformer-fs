@@ -20,7 +20,7 @@ export interface CallMacroDefinition extends MacroDefinition {
     ): ts.Expression;
 }
 
-export interface StatementCallMacroDefinition extends CallMacroDefinition {
+export interface StatementCallMacroDefinition extends MacroDefinition {
     transform(
         state: State,
         node: ts.CallExpression,

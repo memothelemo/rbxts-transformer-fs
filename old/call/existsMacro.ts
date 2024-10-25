@@ -1,8 +1,8 @@
-import { f } from "@transform/factory";
-import { CallMacroDefinition } from "../types";
 import Diagnostics from "@shared/services/diagnostics";
-import MacroUtil from "../util";
 import Logger from "@shared/services/logger";
+import { f } from "@transform/factory";
+import MacroIntrinsics from "../intrinsics";
+import { CallMacroDefinition } from "../types";
 import { assert } from "@shared/util/assert";
 
 export const ExistsMacro: CallMacroDefinition = {
@@ -16,27 +16,27 @@ export const ExistsMacro: CallMacroDefinition = {
     },
 
     transform(state, node, symbol, loadedSymbols) {
-        const firstArg = node.arguments.at(0);
+        const [firstArg] = node.arguments;
         if (!f.is.string(firstArg)) Diagnostics.error(firstArg ?? node, "Expected string");
 
-        const path = MacroUtil.resolvePath(state, node, firstArg.text);
-        Logger.value("args.path", () => state.project.relativeFromDir(path));
+        const resolvedPath = MacroIntrinsics.resolvePath(state, node, firstArg.text);
+        Logger.value("args.path", () => state.project.relativeFromDir(resolvedPath));
 
         const [fileSymbol, dirSymbol, pathSymbol] = loadedSymbols;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         let checker = (_path: string) => true;
         if (symbol === fileSymbol) {
-            checker = MacroUtil.isFile;
+            checker = MacroIntrinsics.isFile;
         } else if (symbol === dirSymbol) {
-            checker = MacroUtil.isDirectory;
+            checker = MacroIntrinsics.isDirectory;
         } else if (symbol === pathSymbol) {
-            checker = MacroUtil.isPathExists;
+            checker = MacroIntrinsics.isPathExists;
         } else {
             assert(false, `${symbol.name} is not unimplemented`);
         }
 
-        const exists = checker(path);
+        const exists = checker(resolvedPath);
 
         // Generalize the boolean literal type into boolean type otherwise TypeScript
         // will recognize the type of value as a value of the boolean itself.

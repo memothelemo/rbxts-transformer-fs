@@ -5,6 +5,7 @@ export type Config = Required<z.infer<typeof checker>>;
 
 // TODO: parse human file sizes from string values
 const checker = z.object({
+    disableComments: z.boolean().optional(),
     debug: z.boolean().optional(),
     hashFileSizeLimit: z.number().positive().optional(),
     readFileSizeLimit: z.number().positive().optional(),
@@ -20,6 +21,7 @@ const checker = z.object({
 });
 
 const defaults: Config = {
+    disableComments: false,
     debug: false,
     // 4 GB limit, we're using streaming anyway if the file is too big!
     hashFileSizeLimit: 4 * 1000 * 1000 * 1000,

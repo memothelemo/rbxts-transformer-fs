@@ -1,9 +1,57 @@
+import { getNodeList } from "@shared/util/getNodeList";
 import ts from "typescript";
 
 export namespace f {
     let factory = ts.factory;
 
+    export function binary(
+        left: ConvertableExpression,
+        operator: ts.BinaryOperator,
+        right: ConvertableExpression,
+    ): ts.BinaryExpression;
+    export function binary(
+        left: ConvertableExpression,
+        operator: ts.BinaryOperator,
+        right: ConvertableExpression,
+        asStatement?: false,
+    ): ts.BinaryExpression;
+    export function binary(
+        left: ConvertableExpression,
+        operator: ts.BinaryOperator,
+        right: ConvertableExpression,
+        asStatement?: true,
+    ): ts.ExpressionStatement;
+    export function binary(
+        left: ConvertableExpression,
+        operator: ts.BinaryOperator,
+        right: ConvertableExpression,
+        asStatement?: boolean,
+    ): ts.BinaryExpression | ts.ExpressionStatement {
+        const expr = factory.createBinaryExpression(
+            toExpression(left),
+            operator,
+            toExpression(right),
+        );
+        if (asStatement) return factory.createExpressionStatement(expr);
+        return expr;
+    }
+
     export namespace stmt {
+        export function ifStmt(
+            condition: ConvertableExpression,
+            thenStatements: ts.Statement | ts.Statement[],
+            elseStatements?: ts.Statement | ts.Statement[],
+        ) {
+            if (elseStatements) {
+                elseStatements = factory.createBlock(getNodeList(elseStatements), true);
+            }
+            return factory.createIfStatement(
+                toExpression(condition),
+                factory.createBlock(getNodeList(thenStatements), true),
+                elseStatements,
+            );
+        }
+
         export function declareVariable(
             name: string | ts.BindingName,
             constant = true,
@@ -76,6 +124,10 @@ export namespace f {
         }
     }
 
+    export function not(value: ts.Expression) {
+        return factory.createPrefixUnaryExpression(ts.SyntaxKind.ExclamationToken, value);
+    }
+
     export function number(value: number | string, flags?: ts.TokenFlags) {
         return +value < 0
             ? factory.createPrefixUnaryExpression(
@@ -86,6 +138,10 @@ export namespace f {
     }
 
     export namespace type {
+        export function union(...types: ts.TypeNode[]): ts.UnionTypeNode {
+            return factory.createUnionTypeNode(types);
+        }
+
         export function reference(name: string | ts.EntityName, args?: ts.TypeNode[]) {
             return factory.createTypeReferenceNode(name, args);
         }
@@ -293,36 +349,36 @@ export namespace f {
     }
 
     export namespace is {
-        export function bool(expr: ts.Expression): expr is ts.BooleanLiteral {
-            return ts.isBooleanLiteral(expr);
+        export function bool(expr?: ts.Expression): expr is ts.BooleanLiteral {
+            return expr !== undefined && ts.isBooleanLiteral(expr);
         }
 
-        export function enumDeclaration(stmt: ts.Node): stmt is ts.EnumDeclaration {
-            return ts.isEnumDeclaration(stmt);
+        export function enumDeclaration(stmt?: ts.Node): stmt is ts.EnumDeclaration {
+            return stmt !== undefined && ts.isEnumDeclaration(stmt);
         }
 
-        export function importDeclaration(stmt: ts.Statement): stmt is ts.ImportDeclaration {
-            return ts.isImportDeclaration(stmt);
+        export function importDeclaration(stmt?: ts.Statement): stmt is ts.ImportDeclaration {
+            return stmt !== undefined && ts.isImportDeclaration(stmt);
         }
 
-        export function namedDeclaration(node: ts.Node): node is ts.NamedDeclaration {
-            return ts.isNamedDeclaration(node);
+        export function namedDeclaration(node?: ts.Node): node is ts.NamedDeclaration {
+            return node !== undefined && ts.isNamedDeclaration(node);
         }
 
-        export function importClause(node: ts.Node): node is ts.ImportClause {
-            return ts.isImportClause(node);
+        export function importClause(node?: ts.Node): node is ts.ImportClause {
+            return node !== undefined && ts.isImportClause(node);
         }
 
-        export function namedImports(node: ts.Node): node is ts.NamedImports {
-            return ts.isNamedImports(node);
+        export function namedImports(node?: ts.Node): node is ts.NamedImports {
+            return node !== undefined && ts.isNamedImports(node);
         }
 
-        export function number(expr: ts.Expression): expr is ts.NumericLiteral {
-            return ts.isNumericLiteral(expr);
+        export function number(expr?: ts.Expression): expr is ts.NumericLiteral {
+            return expr !== undefined && ts.isNumericLiteral(expr);
         }
 
-        export function string(expr: ts.Expression): expr is ts.StringLiteralLike {
-            return ts.isStringLiteralLike(expr);
+        export function string(expr?: ts.Expression): expr is ts.StringLiteralLike {
+            return expr !== undefined && ts.isStringLiteralLike(expr);
         }
     }
 
