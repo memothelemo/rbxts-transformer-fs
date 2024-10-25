@@ -3,6 +3,7 @@ import { ExistsMacro } from "./existsMacro";
 import { ExpectMacro } from "./expectMacro";
 import { FindInstanceMacro } from "./findInstanceMacro";
 import { HashFileMacro } from "./hashFileMacro";
+import { InstanceMacro } from "./instanceMacro";
 import { ReadFileMacro } from "./readFileMacro";
 import { WaitForInstanceMacro } from "./waitForInstanceMacro";
 
@@ -12,6 +13,7 @@ export const CALL_MACROS = new Array<CallMacroDefinition>(
     ReadFileMacro,
 
     FindInstanceMacro,
+    InstanceMacro,
     WaitForInstanceMacro,
 );
 

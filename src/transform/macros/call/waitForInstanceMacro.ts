@@ -78,6 +78,7 @@ export const WaitForInstanceMacro: CallMacroDefinition = {
                 continue;
             }
 
+            // TODO: implement this feature below this comment
             // Since not every `.Parent` or other related fields is guaranteed to be
             // loaded, we need to wait these fields to be exists before proceeding to find
             // another succeeding path parts.
