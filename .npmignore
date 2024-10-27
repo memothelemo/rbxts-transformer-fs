@@ -11,6 +11,6 @@ tsconfig.json
 .editorconfig
 *.log
 
-yarn.lock
+bun.lockb
 
 test
