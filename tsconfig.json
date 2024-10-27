@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "commonjs",
+    "outDir": "out",
+    "baseUrl": "src/",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "downlevelIteration": true,
+    "types": ["@types/node", "@types/ts-expose-internals"],
+    "paths": {
+      "@shared/*": ["shared/*"],
+      "@transform/*": ["transform/*"],
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths",
+        "exclude": ["**/node_modules/**"]
+      }
+    ]
+  },
+  "exclude": ["old/**", "test/**"]
+}

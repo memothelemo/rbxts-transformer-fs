@@ -1,0 +1,16 @@
+# dev files/dirs
+src
+.github
+.vscode
+
+*.tgz
+tsconfig.json
+.eslintignore
+.eslintrc.json
+.prettierrc
+.editorconfig
+*.log
+
+yarn.lock
+
+test

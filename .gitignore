@@ -1,0 +1,23 @@
+# built artifacts
+**/node_modules
+**/out
+**/include
+
+*.tgz
+*.js
+*.tsbuildinfo
+
+# logs
+*.log
+
+# roblox files
+*.rbxlx
+*.rbxl
+
+# temp & lock files
+*.rbxlx.lock
+*.rbxl.lock
+*.odt#
+
+*.temp
+*.tmp
