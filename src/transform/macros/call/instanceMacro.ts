@@ -5,7 +5,19 @@ import Diagnostics from "@shared/services/diagnostics";
 import Logger from "@shared/services/logger";
 import { assert } from "@shared/util/assert";
 import ts from "typescript";
-import { PACKAGE_NAME } from "@shared/constants";
+import { State } from "@transform/state";
+
+function createCannotFindMessage(state: State, currentRef: ts.Expression, childOrProperty: string) {
+    const ft = state.tsContext.factory;
+    const span = ft.createTemplateSpan(
+        f.call(f.field(currentRef, f.identifier("GetFullName", false)), undefined, []),
+        ft.createTemplateTail(""),
+    );
+    return ft.createTemplateExpression(
+        ft.createTemplateHead(`Cannot find \`${childOrProperty}\` in `),
+        [span],
+    );
+}
 
 export const InstanceMacro: CallMacroDefinition = {
     getSymbols(state) {
@@ -91,22 +103,7 @@ export const InstanceMacro: CallMacroDefinition = {
                 accessor = f.field.optional(currentRef, f.identifier(property, false));
             }
 
-            // TODO: Refactor this.
-            const ft = f.get();
-            const message = ft.createTemplateExpression(
-                ft.createTemplateHead(`Cannot find \`${property}\` in `),
-                [
-                    ft.createTemplateSpan(
-                        f.call(
-                            f.field(currentRef, f.identifier("GetFullName", false)),
-                            undefined,
-                            [],
-                        ),
-                        ft.createTemplateTail(""),
-                    ),
-                ],
-            );
-
+            const message = createCannotFindMessage(state, currentRef, property);
             state.prereqList([
                 f.stmt.declareVariable(varName, true, undefined, accessor),
                 f.stmt.ifStmt(f.binary(varName, ts.SyntaxKind.EqualsEqualsEqualsToken, f.nil()), [

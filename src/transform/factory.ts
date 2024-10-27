@@ -4,10 +4,6 @@ import ts from "typescript";
 export namespace f {
     let factory = ts.factory;
 
-    export function get() {
-        return factory;
-    }
-
     export function binary(
         left: ConvertableExpression,
         operator: ts.BinaryOperator,
