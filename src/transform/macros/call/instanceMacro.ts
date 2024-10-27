@@ -54,7 +54,7 @@ export const InstanceMacro: CallMacroDefinition = {
             target,
             useItsExactPath,
             firstArg,
-            "$waitForInstance",
+            "$instance",
         );
         Logger.value("target.rbxPath.relative(source)", targetRbxPath);
 
@@ -136,7 +136,7 @@ export const InstanceMacro: CallMacroDefinition = {
             const assertVar = f.identifier("assert");
             const assertArgs: ts.Expression[] = [
                 f.call(guard, undefined, [tempVar], false),
-                f.string("This instance cannot be passed within required type"),
+                f.string("This instance did not pass within a required type"),
             ];
 
             lastStmt = f.call(assertVar, undefined, assertArgs, true);

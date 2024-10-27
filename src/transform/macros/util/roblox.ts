@@ -83,7 +83,7 @@ export function getRelativeRbxPathToTarget(
         source.path.length === target.path.length &&
         zipArrays(source.path, target.path).every(([s, t]) => s == t);
 
-    if (isReferencingSourceScript) return [RbxPathScript];
+    if (isReferencingSourceScript && !useItsExactPath) return [RbxPathScript];
 
     Logger.value("source.networkType", () => NetworkType[source.networkType]);
     Logger.value("target.networkType", () => NetworkType[target.networkType]);
@@ -156,7 +156,8 @@ export function getRelativeRbxPathToTarget(
 
     // Finally, add script before the rest of elements (if applicable in shouldAddScript)
     const shouldAddScript =
-        result.at(0) == RbxPathParent || arrayStartsWith(target.path, source.path);
+        result.at(0) == RbxPathParent ||
+        (arrayStartsWith(target.path, source.path) && !useItsExactPath);
 
     if (shouldAddScript) (result as unknown[]).unshift(RbxPathScript);
 

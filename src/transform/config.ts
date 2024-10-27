@@ -13,6 +13,8 @@ const checker = z.object({
 
     $internal: z
         .object({
+            testing: z.boolean().optional(),
+
             logAllFiles: z.boolean().optional(),
             logDeclaredMacros: z.boolean().optional(),
             logModuleResolution: z.boolean().optional(),
@@ -30,6 +32,8 @@ const defaults: Config = {
     dumpTransformedFiles: false,
 
     $internal: {
+        testing: false,
+
         logAllFiles: false,
         logDeclaredMacros: false,
         logModuleResolution: false,

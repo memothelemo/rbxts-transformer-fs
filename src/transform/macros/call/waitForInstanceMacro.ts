@@ -50,6 +50,14 @@ export const WaitForInstanceMacro: CallMacroDefinition = {
         );
         Logger.value("target.rbxPath.relative(source)", targetRbxPath);
 
+        /*
+            Code Output (timeout not set):
+            const that = script.Parent.WaitForChild("Foo").WaitForChild("Foo");
+
+            Code Output (timeout set):
+            const that = script.Parent.WaitForChild("Foo")?.WaitForChild("Foo");
+        */
+
         let expr = MacroUtil.roblox.createRootPathExpr(targetRbxPath);
         for (const part of targetRbxPath) {
             if (typeof part === "string") {
@@ -79,6 +87,7 @@ export const WaitForInstanceMacro: CallMacroDefinition = {
             }
 
             // TODO: implement this feature below this comment
+            //
             // Since not every `.Parent` or other related fields is guaranteed to be
             // loaded, we need to wait these fields to be exists before proceeding to find
             // another succeeding path parts.

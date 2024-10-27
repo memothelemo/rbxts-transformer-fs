@@ -25,7 +25,7 @@ export class State {
         public readonly tsProgram: ts.Program,
         public readonly tsContext: ts.TransformationContext,
     ) {
-        Cache.isInitialCompile = true;
+        Cache.isInitialCompile = false;
         f.override(tsContext.factory);
 
         const symbolProvider = Logger.benchmark(
@@ -140,13 +140,17 @@ export class State {
         return { column: info.character + 1, line: info.line + 1 };
     }
 
-    public getJSDocTagContent(node: ts.Node, tag: string): NonNullable<unknown> | void {
+    public getJSDocTagContent(
+        node: ts.Node,
+        tag: string,
+    ): NonNullable<string | ts.NodeArray<ts.JSDocComment>> | undefined {
         const tags = ts.getJSDocTags(node);
         for (const { comment, tagName } of tags) {
             if (tagName.text === tag && comment != undefined) {
                 return comment;
             }
         }
+        return undefined;
     }
 
     public transformChildrenOfNode<T extends ts.Node>(node: T): T {
@@ -174,5 +178,18 @@ export class State {
 
     public isCapturing(threshold = 1) {
         return this.prereqStack.length > threshold;
+    }
+
+    public expectsTestingError(node: ts.Node): boolean {
+        if (this.config.$internal.testing !== true) return false;
+
+        const content = this.getJSDocTagContent(node, "transformer-fs");
+        if (!content) return false;
+
+        if (typeof content === "string") {
+            return content === "expect-error";
+        } else {
+            return content.some(v => v.text === "expect-error");
+        }
     }
 }

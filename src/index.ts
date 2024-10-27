@@ -89,6 +89,16 @@ function main(program: ts.Program, rawConfig: unknown) {
         Logger.warn(`Dumping transformed files is enabled`);
     }
 
+    if (Cache.isInitialCompile && transformConfig.$internal.testing === true) {
+        const f = chalk.yellow.bold;
+        Logger.warn(
+            f("`$internal.testing` IS ENABLED! This option is for development purposes!"),
+            "",
+            f(`If you are not a ${PACKAGE_NAME} developer nor testing the transformer`),
+            f("PROCEED AT YOUR OWN RISK!"),
+        );
+    }
+
     return (context: ts.TransformationContext) => {
         const state = new FsTransformer.State(transformConfig, project, program, context);
         const elapsed = getTimeMs() - startTime;

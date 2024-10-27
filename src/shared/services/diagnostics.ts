@@ -55,6 +55,7 @@ namespace Diagnostics {
                 );
                 Logger.value("diagnostic.path", error.diagnostic.file.path);
                 Logger.value("diagnostic.kind", ts.DiagnosticCategory[error.diagnostic.category]);
+                Logger.value("diagnostic.stack", error.stack);
                 Logger.pop();
 
                 addDiagnostic(error.diagnostic);

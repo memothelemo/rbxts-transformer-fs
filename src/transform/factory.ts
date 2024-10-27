@@ -37,6 +37,10 @@ export namespace f {
     }
 
     export namespace stmt {
+        export function block(statements: ts.Statement[]) {
+            return factory.createBlock(statements, statements.length > 1);
+        }
+
         export function ifStmt(
             condition: ConvertableExpression,
             thenStatements: ts.Statement | ts.Statement[],
