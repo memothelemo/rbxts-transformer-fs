@@ -15,4 +15,4 @@ Removed features:
 
 Functions to change (arguments are the same thing):
 - `$path` => `$instance`
-- `$pathWaitFor` => `$instanceWaitFor`
+- `$pathWaitFor` => `$waitForInstance`
