@@ -39,15 +39,15 @@ export namespace $waitForInstance {
     ): T | undefined;
 }
 
-export function $instances(...paths: string[]): Instance[];
-export namespace $instances {
-    export function exact(...paths: string[]): Instance[];
-}
+// export function $instances(...paths: string[]): Instance[];
+// export namespace $instances {
+//     export function exact(...paths: string[]): Instance[];
+// }
 
-export function $waitForInstances(...paths: string[]): Instance[];
-export namespace $waitForInstances {
-    export function exact(...paths: string[]): Instance[];
-}
+// export function $waitForInstances(...paths: string[]): Instance[];
+// export namespace $waitForInstances {
+//     export function exact(...paths: string[]): Instance[];
+// }
 
 // export function $findInstance<T extends Instance = Instance>(path: string, exactPath?: boolean): T | undefined;
 // export function $waitForInstance<T extends Instance = Instance>(path: string, timeout?: number, exactPath?: boolean): T;
