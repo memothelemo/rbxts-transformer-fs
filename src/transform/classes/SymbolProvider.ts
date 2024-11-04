@@ -92,8 +92,8 @@ export class ModuleFileSymbol extends BaseFileSymbol {
     public readonly $instance: InstanceNamespaceSymbol;
     public readonly $findInstance: InstanceNamespaceSymbol;
     public readonly $waitForInstance: InstanceNamespaceSymbol;
-    public readonly $instances: InstanceNamespaceSymbol;
-    public readonly $waitForInstances: InstanceNamespaceSymbol;
+    // public readonly $instances: InstanceNamespaceSymbol;
+    // public readonly $waitForInstances: InstanceNamespaceSymbol;
 
     public constructor(state: State, public readonly file: ts.SourceFile) {
         super();
@@ -105,8 +105,8 @@ export class ModuleFileSymbol extends BaseFileSymbol {
         this.$instance = new InstanceNamespaceSymbol(this, "$instance");
         this.$findInstance = new InstanceNamespaceSymbol(this, "$findInstance");
         this.$waitForInstance = new InstanceNamespaceSymbol(this, "$waitForInstance");
-        this.$instances = new InstanceNamespaceSymbol(this, "$instances");
-        this.$waitForInstances = new InstanceNamespaceSymbol(this, "$waitForInstances");
+        // this.$instances = new InstanceNamespaceSymbol(this, "$instances");
+        // this.$waitForInstances = new InstanceNamespaceSymbol(this, "$waitForInstances");
     }
 }
 
