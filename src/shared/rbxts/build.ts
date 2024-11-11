@@ -27,7 +27,7 @@ function getTsConfigPath() {
     const project = process.argv.at(projectFlag);
 
     let initial_path: string | undefined;
-    if (!project || projectFlag !== -1) {
+    if (!project || projectFlag === -1) {
         initial_path = ".";
     } else {
         initial_path = project;
